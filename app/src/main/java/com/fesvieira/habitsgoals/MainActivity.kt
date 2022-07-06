@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                 Habit("Drink 3 L of water", 5),
                 Habit("Study Android", 7),
                 Habit("Meditate", 8),
-                Habit("Read a book", 1),
+                Habit("Read book", 1),
             )
             HabitsGoalsTheme {
                 HabitList(habitsList)
