@@ -1,7 +1,6 @@
 package com.fesvieira.habitsgoals
 
 import android.os.Bundle
-import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -15,42 +14,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.ui.theme.Blue500
+import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
-import com.fesvieira.habitsgoals.ui.theme.black
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val habitsList = listOf(
-                Habit("Drink 3 L of water", 5),
-                Habit("Study Android", 7),
-                Habit("Meditate", 8),
-                Habit("Read book", 1),
-            )
-            HabitsGoalsTheme {
-                HabitList(habitsList)
-            }
-        }
-    }
-}
-
-@Composable
-fun HabitList(list: List<Habit>) {
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(list) { item ->
-            HabitCard(
-                name = item.name,
-                info = item.strike)
+            MainScreen()
         }
     }
 }
@@ -90,9 +69,8 @@ fun HabitCard(name: String, info: Int) {
                 Modifier
                     .padding(5.dp)
                     .clip(CircleShape)
-                    .background(Blue500)
-                ,
-            ){
+                    .background(Blue500),
+            ) {
                 Icon(
                     painter = painterResource(
                         id = R.drawable.ic_add
@@ -104,20 +82,61 @@ fun HabitCard(name: String, info: Int) {
     }
 }
 
+@Composable
+fun HabitList(list: List<Habit>) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.padding(top = 16.dp)
+    ) {
+        items(list) { item ->
+            HabitCard(
+                name = item.name,
+                info = item.strike
+            )
+        }
+    }
+}
+
+@Composable
+fun MainScreen() {
+    HabitsGoalsTheme {
+        val habitsList = listOf(
+            Habit("Drink 3 L of water", 5),
+            Habit("Study Android", 7),
+            Habit("Meditate", 8),
+            Habit("Read a book", 1),
+        )
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    backgroundColor = Blue700,
+                ) {
+                    Text (
+                        text = "Habits List",
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { /*TODO*/ },
+                ) {
+
+                }
+            }
+        ) {
+            HabitList(list = habitsList)
+        }
+    }
+}
+
 @Preview(
     showBackground = true,
-//    widthDp = 360,
-//    heightDp = 640
+    widthDp = 360,
+    heightDp = 640
 )
 @Composable
 fun DefaultPreview() {
-    val habitsList = listOf(
-        Habit("Drink 3 L of water", 5),
-        Habit("Study Android", 7),
-        Habit("Meditate", 8),
-        Habit("Read a book", 1),
-    )
-    HabitsGoalsTheme {
-        HabitList(habitsList)
-    }
+    MainScreen()
 }
