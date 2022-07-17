@@ -122,7 +122,13 @@ fun MainScreen() {
                 FloatingActionButton(
                     onClick = { /*TODO*/ },
                 ) {
-
+                    Icon(
+                        painter = painterResource(
+                            id = R.drawable.ic_add,
+                        ),
+                        tint = Color.White,
+                        contentDescription = null,
+                    )
                 }
             }
         ) {
