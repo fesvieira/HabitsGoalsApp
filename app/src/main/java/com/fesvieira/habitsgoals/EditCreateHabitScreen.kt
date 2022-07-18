@@ -10,11 +10,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 
 @Composable
-fun EditCreateHabitScreen(habit: Habit? = null) {
-    var text by remember{ mutableStateOf(habit?.name ?: "")}
+fun EditCreateHabitScreen(habitName: String? = null, navController: NavController) {
+    var text by remember{ mutableStateOf(habitName ?: "")}
     HabitsGoalsTheme {
         Column(verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -33,5 +34,5 @@ fun EditCreateHabitScreen(habit: Habit? = null) {
 @Composable
 @Preview
 fun PreviewEditText() {
-    EditCreateHabitScreen()
+
 }

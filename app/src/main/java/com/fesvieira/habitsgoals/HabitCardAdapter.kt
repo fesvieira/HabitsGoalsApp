@@ -19,7 +19,6 @@ import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HabitCardAdapter(name: String, info: Int, onClickListener: () -> Unit) {
-
     HabitsGoalsTheme {
         Card(
             elevation = 6.dp,

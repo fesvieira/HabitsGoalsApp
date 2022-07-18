@@ -20,7 +20,9 @@ fun HabitListScreen(list: List<Habit>, navController: NavController) {
                 name = item.name,
                 info = item.strike,
                 onClickListener = {
-                    navController.navigate("edit_create_habit_screen")
+                    navController.navigate(
+                        "edit-create-habit-screen/${item.name}"
+                    )
                 }
             )
         }
