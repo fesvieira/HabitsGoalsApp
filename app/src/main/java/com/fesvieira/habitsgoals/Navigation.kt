@@ -7,6 +7,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.fesvieira.habitsgoals.HabitRepository.habitsList
+import com.fesvieira.habitsgoals.screens.EditCreateHabitScreen
+import com.fesvieira.habitsgoals.screens.HabitListScreen
 
 @Composable
 fun Navigation() {
