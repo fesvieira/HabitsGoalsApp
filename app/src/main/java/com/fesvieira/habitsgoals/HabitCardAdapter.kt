@@ -4,10 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,8 +16,9 @@ import androidx.compose.ui.unit.sp
 import com.fesvieira.habitsgoals.ui.theme.Blue500
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HabitCardAdapter(name: String, info: Int) {
+fun HabitCardAdapter(name: String, info: Int, onClickListener: () -> Unit) {
 
     HabitsGoalsTheme {
         Card(
@@ -28,7 +26,8 @@ fun HabitCardAdapter(name: String, info: Int) {
             modifier = Modifier
                 .wrapContentHeight()
                 .padding(horizontal = 16.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp)),
+            onClick = onClickListener
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -73,5 +72,5 @@ fun HabitCardAdapter(name: String, info: Int) {
 @Composable
 @Preview
 fun PreviewHabitCardAdapter() {
-    HabitCardAdapter("Gerjo", 1)
+    HabitCardAdapter("Gerjo", 1) {}
 }

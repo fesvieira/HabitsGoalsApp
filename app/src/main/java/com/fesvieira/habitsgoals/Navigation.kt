@@ -10,6 +10,9 @@ import com.fesvieira.habitsgoals.HabitRepository.habitsList
 fun Navigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "habit_list_screen") {
-        composable("habit_list_screen") { HabitListScreen(list = habitsList) }
+        composable("habit_list_screen") {
+            HabitListScreen(list = habitsList, navController = navController)
+        }
+        composable("edit_create_habit_screen") { EditCreateHabitScreen() }
     }
 }

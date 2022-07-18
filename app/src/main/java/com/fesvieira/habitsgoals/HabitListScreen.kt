@@ -7,9 +7,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @Composable
-fun HabitListScreen(list: List<Habit>) {
+fun HabitListScreen(list: List<Habit>, navController: NavController) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.padding(top = 16.dp)
@@ -17,7 +18,10 @@ fun HabitListScreen(list: List<Habit>) {
         items(list) { item ->
             HabitCardAdapter(
                 name = item.name,
-                info = item.strike
+                info = item.strike,
+                onClickListener = {
+                    navController.navigate("edit_create_habit_screen")
+                }
             )
         }
     }
