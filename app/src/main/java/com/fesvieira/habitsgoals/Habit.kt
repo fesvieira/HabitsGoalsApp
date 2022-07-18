@@ -1,4 +1,4 @@
-package com.fesvieira.habitsgoals.model
+package com.fesvieira.habitsgoals
 
 data class Habit(
     val name: String,
