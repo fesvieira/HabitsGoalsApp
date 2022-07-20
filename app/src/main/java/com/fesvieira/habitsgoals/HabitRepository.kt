@@ -1,10 +1,15 @@
 package com.fesvieira.habitsgoals
 
-object HabitRepository {
-    val habitsList = listOf(
-        Habit("Drink 3 L of water", 5),
-        Habit("Study Android", 7),
-        Habit("Meditate", 8),
-        Habit("Read a book", 1),
-    )
+import kotlinx.coroutines.flow.Flow
+
+interface HabitRepository {
+    suspend fun getHabits(): Flow<List<Habit>>
+
+    suspend fun getHabitById(id: Int): Flow<Habit>
+
+    suspend fun addHabit(habit: Habit)
+
+    suspend fun updateHabit(habit: Habit)
+
+    suspend fun deleteHabit(habit: Habit)
 }
