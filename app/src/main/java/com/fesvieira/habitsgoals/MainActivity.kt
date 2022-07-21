@@ -1,6 +1,7 @@
 package com.fesvieira.habitsgoals
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -11,10 +12,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.fesvieira.habitsgoals.HabitRepository.habitsList
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,19 +42,6 @@ fun MainScreen() {
                     )
                 }
             },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { /*TODO*/ },
-                ) {
-                    Icon(
-                        painter = painterResource(
-                            id = R.drawable.ic_add,
-                        ),
-                        tint = Color.White,
-                        contentDescription = null,
-                    )
-                }
-            }
         ) {
             Navigation()
         }
