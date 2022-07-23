@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
+import com.fesvieira.habitsgoals.ui.theme.black
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,6 +31,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen() {
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setSystemBarsColor(black)
     HabitsGoalsTheme {
         Scaffold(
             topBar = {
