@@ -1,6 +1,5 @@
 package com.fesvieira.habitsgoals.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,10 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.fesvieira.habitsgoals.Habit
 import com.fesvieira.habitsgoals.HabitsViewModel
@@ -34,17 +30,18 @@ fun EditCreateHabitScreen(
         Scaffold(floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (selectedHabit.name == "") {
-                        habitsViewModel.addHabit(
-                            Habit(id= 0, name = text, strike = 0)
-                        )
-                    } else {
-                        Log.d("TAGG" , text)
-                        habitsViewModel.updateHabit(text)
+                    if (text != "") {
+                        if (selectedHabit.name == "") {
+                            habitsViewModel.addHabit(
+                                Habit(id = 0, name = text, strike = 0)
+                            )
+                        } else {
+                            habitsViewModel.updateHabit(text)
+                        }
                     }
                     navController.navigate("habit-list-screen")
                 },
-                ) {
+            ) {
                 Icon(
                     painter = painterResource(
                         id = R.drawable.ic_save,
@@ -71,10 +68,4 @@ fun EditCreateHabitScreen(
             )
         }
     }
-}
-
-@Composable
-@Preview
-fun PreviewEditText() {
-
 }

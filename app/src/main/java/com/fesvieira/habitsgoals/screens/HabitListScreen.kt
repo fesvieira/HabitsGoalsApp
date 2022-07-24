@@ -65,6 +65,10 @@ fun HabitListScreen(
                                 strike = item.strike
                             )
                         navController.navigate("edit-create-habit-screen")
+                    },
+                    onAddClickListener = {
+                        habitsViewModel.selectedHabit = item
+                        habitsViewModel.addStrike()
                     }
                 )
             }

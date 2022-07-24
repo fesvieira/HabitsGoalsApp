@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fesvieira.habitsgoals.ui.theme.Blue500
@@ -18,7 +17,12 @@ import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HabitCardAdapter(name: String, info: Int, onClickListener: () -> Unit) {
+fun HabitCardAdapter(
+    name: String,
+    info: Int,
+    onClickListener: () -> Unit,
+    onAddClickListener: () -> Unit
+) {
     HabitsGoalsTheme {
         Card(
             elevation = 6.dp,
@@ -50,7 +54,7 @@ fun HabitCardAdapter(name: String, info: Int, onClickListener: () -> Unit) {
                     )
                 }
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { onAddClickListener() },
                     Modifier
                         .padding(5.dp)
                         .clip(CircleShape)
@@ -66,10 +70,4 @@ fun HabitCardAdapter(name: String, info: Int, onClickListener: () -> Unit) {
             }
         }
     }
-}
-
-@Composable
-@Preview
-fun PreviewHabitCardAdapter() {
-    HabitCardAdapter("Gerjo", 1) {}
 }

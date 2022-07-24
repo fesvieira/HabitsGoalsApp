@@ -34,12 +34,18 @@ class HabitsViewModel @Inject constructor(
     }
 
     fun updateHabit(newName: String) {
-
         viewModelScope.launch(Dispatchers.IO) {
             selectedHabit = selectedHabit.copy(name = newName)
             habitRepository.updateHabit(selectedHabit)
         }
+    }
 
+    fun addStrike() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val newStrike = selectedHabit.strike + 1
+            selectedHabit = selectedHabit.copy(strike = newStrike)
+            habitRepository.updateHabit(selectedHabit)
+        }
     }
 
     fun deleteHabit(habit:Habit) {
