@@ -15,13 +15,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.fesvieira.habitsgoals.Habit
 import com.fesvieira.habitsgoals.HabitCardAdapter
 import com.fesvieira.habitsgoals.HabitsViewModel
 import com.fesvieira.habitsgoals.R
 
 @Composable
 fun HabitListScreen(
-    habitsViewModel: HabitsViewModel = hiltViewModel(),
+    habitsViewModel: HabitsViewModel,
     navController: NavController
 ) {
 
@@ -32,18 +33,22 @@ fun HabitListScreen(
 
     Scaffold(
         floatingActionButton = {
-        FloatingActionButton(onClick = {navController.navigate("edit-create-habit-screen")},
+            FloatingActionButton(
+                onClick = {
+                    habitsViewModel.selectedHabit = Habit(0,"",0)
+                    navController.navigate("edit-create-habit-screen")
+                },
 
-        ) {
-            Icon(
-                painter = painterResource(
-                    id = R.drawable.ic_add,
-                ),
-                tint = Color.White,
-                contentDescription = null,
-            )
-        }
-    }) {
+                ) {
+                Icon(
+                    painter = painterResource(
+                        id = R.drawable.ic_add,
+                    ),
+                    tint = Color.White,
+                    contentDescription = null,
+                )
+            }
+        }) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(top = 16.dp)
@@ -53,7 +58,12 @@ fun HabitListScreen(
                     name = item.name,
                     info = item.strike,
                     onClickListener = {
-                        habitsViewModel.selectedHabit = item
+                        habitsViewModel.selectedHabit =
+                            Habit(
+                                id = item.id,
+                                name = item.name,
+                                strike = item.strike
+                            )
                         navController.navigate("edit-create-habit-screen")
                     }
                 )

@@ -19,9 +19,6 @@ class HabitsViewModel @Inject constructor(
     var habits by mutableStateOf(emptyList<Habit>())
     var selectedHabit by mutableStateOf(Habit(0,"",0))
 
-    private var _addHabitClicked = MutableLiveData(false)
-    val addHabitClicked get()  = _addHabitClicked
-
     fun getHabits() {
         viewModelScope.launch {
             habitRepository.getHabits().collect { habitsList ->
@@ -37,7 +34,12 @@ class HabitsViewModel @Inject constructor(
     }
 
     fun updateHabit(newName: String) {
-        selectedHabit = selectedHabit.copy(name = newName)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            selectedHabit = selectedHabit.copy(name = newName)
+            habitRepository.updateHabit(selectedHabit)
+        }
+
     }
 
     fun deleteHabit(habit:Habit) {
