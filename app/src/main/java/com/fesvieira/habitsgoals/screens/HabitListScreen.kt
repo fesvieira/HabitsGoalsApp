@@ -1,6 +1,6 @@
 package com.fesvieira.habitsgoals.screens
 
-import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -22,7 +22,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.fesvieira.habitsgoals.Habit
 import com.fesvieira.habitsgoals.HabitCardAdapter
@@ -36,6 +35,8 @@ fun HabitListScreen(
     habitsViewModel: HabitsViewModel,
     navController: NavController
 ) {
+
+    BackHandler {}
 
     LaunchedEffect(Unit) {
         habitsViewModel.getHabits()
