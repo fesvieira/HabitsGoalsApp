@@ -34,21 +34,7 @@ fun MainScreen() {
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(black)
     HabitsGoalsTheme {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    backgroundColor = Blue700,
-                ) {
-                    Text (
-                        text = "Habits List",
-                        color = Color.White,
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                }
-            },
-        ) {
-            Navigation()
-        }
+        Navigation()
     }
 }
 

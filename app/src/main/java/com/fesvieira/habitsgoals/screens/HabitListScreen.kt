@@ -27,6 +27,7 @@ import com.fesvieira.habitsgoals.Habit
 import com.fesvieira.habitsgoals.HabitCardAdapter
 import com.fesvieira.habitsgoals.HabitsViewModel
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.ui.theme.black
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -44,6 +45,17 @@ fun HabitListScreen(
     val list = habitsViewModel.habits
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                backgroundColor = Blue700,
+            ) {
+                Text (
+                    text = "Habits List",
+                    color = Color.White,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {

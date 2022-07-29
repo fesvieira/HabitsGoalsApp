@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import com.fesvieira.habitsgoals.Habit
 import com.fesvieira.habitsgoals.HabitsViewModel
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 
 @Composable
@@ -27,45 +28,57 @@ fun EditCreateHabitScreen(
     var text by remember { mutableStateOf(selectedHabit.name) }
 
     HabitsGoalsTheme {
-        Scaffold(floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    if (text != "") {
-                        if (selectedHabit.name == "") {
-                            habitsViewModel.addHabit(
-                                Habit(id = 0, name = text, strike = 0)
-                            )
-                        } else {
-                            habitsViewModel.updateHabit(text)
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    backgroundColor = Blue700,
+                ) {
+                    Text(
+                        text = "Habit Factory",
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        if (text != "") {
+                            if (selectedHabit.name == "") {
+                                habitsViewModel.addHabit(
+                                    Habit(id = 0, name = text, strike = 0)
+                                )
+                            } else {
+                                habitsViewModel.updateHabit(text)
+                            }
                         }
-                    }
-                    navController.navigate("habit-list-screen")
-                },
+                        navController.navigate("habit-list-screen")
+                    },
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            id = R.drawable.ic_save,
+                        ),
+                        tint = Color.White,
+                        contentDescription = null,
+                    )
+                }
+            }) {
+            Column(
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
             ) {
-                Icon(
-                    painter = painterResource(
-                        id = R.drawable.ic_save,
-                    ),
-                    tint = Color.White,
-                    contentDescription = null,
+                OutlinedTextField(
+                    modifier = Modifier.padding(top = 16.dp),
+                    value = text,
+                    onValueChange = { entry ->
+                        text = entry
+                    },
+                    label = { Text("Habit name") }
                 )
             }
-        }) {
+        }
 
-        }
-        Column(
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            OutlinedTextField(
-                modifier = Modifier.padding(top = 16.dp),
-                value = text,
-                onValueChange = { entry ->
-                    text = entry
-                },
-                label = { Text("Habit name") }
-            )
-        }
     }
 }

@@ -7,13 +7,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.fesvieira.habitsgoals.screens.EditCreateHabitScreen
 import com.fesvieira.habitsgoals.screens.HabitListScreen
+import com.fesvieira.habitsgoals.screens.SplashScreen
 
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
     val habitsViewModel = hiltViewModel<HabitsViewModel>()
 
-    NavHost(navController = navController, startDestination = "habit-list-screen") {
+    NavHost(navController = navController, startDestination = "splash-screen") {
+        composable("splash-screen") {
+            SplashScreen(navController = navController)
+        }
+
         composable("habit-list-screen") {
             HabitListScreen(
                 navController = navController,
