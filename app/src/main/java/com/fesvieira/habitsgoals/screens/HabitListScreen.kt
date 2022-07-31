@@ -59,7 +59,7 @@ fun HabitListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    habitsViewModel.selectedHabit = Habit(0, "", 0)
+                    habitsViewModel.selectedHabit = Habit(0, "", 0, 0)
                     navController.navigate("edit-create-habit-screen")
                 },
 
@@ -131,12 +131,14 @@ fun HabitListScreen(
                         HabitCardAdapter(
                             name = item.name,
                             info = item.strike,
+                            goal = item.goal,
                             onClickListener = {
                                 habitsViewModel.selectedHabit =
                                     Habit(
                                         id = item.id,
                                         name = item.name,
-                                        strike = item.strike
+                                        strike = item.strike,
+                                        goal = item.goal
                                     )
                                 navController.navigate("edit-create-habit-screen")
                             },

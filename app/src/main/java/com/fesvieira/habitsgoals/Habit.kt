@@ -1,5 +1,6 @@
 package com.fesvieira.habitsgoals
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -7,6 +8,10 @@ import androidx.room.PrimaryKey
 data class Habit(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
+    @ColumnInfo(name = "name")
     val name: String,
-    val strike: Int
+    @ColumnInfo(name = "strike")
+    val strike: Int,
+    @ColumnInfo(name = "goal")
+    val goal: Int,
 )

@@ -1,9 +1,6 @@
 package com.fesvieira.habitsgoals.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.fesvieira.habitsgoals.Habit
 import com.fesvieira.habitsgoals.HabitsViewModel
@@ -25,7 +23,8 @@ fun EditCreateHabitScreen(
 ) {
     val selectedHabit = habitsViewModel.selectedHabit
 
-    var text by remember { mutableStateOf(selectedHabit.name) }
+    var textName by remember { mutableStateOf(selectedHabit.name) }
+    var textGoal by remember { mutableStateOf(selectedHabit.name) }
 
     HabitsGoalsTheme {
         Scaffold(
@@ -43,13 +42,13 @@ fun EditCreateHabitScreen(
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-                        if (text != "") {
+                        if (textName != "") {
                             if (selectedHabit.name == "") {
                                 habitsViewModel.addHabit(
-                                    Habit(id = 0, name = text, strike = 0)
+                                    Habit(id = 0, name = textName, strike = 0, goal = textGoal.toInt())
                                 )
                             } else {
-                                habitsViewModel.updateHabit(text)
+                                habitsViewModel.updateHabit(textName)
                             }
                         }
                         navController.navigate("habit-list-screen")
@@ -71,11 +70,26 @@ fun EditCreateHabitScreen(
             ) {
                 OutlinedTextField(
                     modifier = Modifier.padding(top = 16.dp),
-                    value = text,
+                    value = textName,
                     onValueChange = { entry ->
-                        text = entry
+                        textName = entry
                     },
                     label = { Text("Habit name") }
+                )
+
+                OutlinedTextField(
+                    modifier = Modifier.padding(top = 16.dp),
+                    value = textGoal,
+                    onValueChange = { entry ->
+                        textGoal = entry
+                    },
+                    label = { Text("Goal") }
+                )
+                
+                Text(
+                    text = "How many days you want to repeat the habit?",
+                    fontSize = 13.sp,
+                    color = Color.Gray
                 )
             }
         }

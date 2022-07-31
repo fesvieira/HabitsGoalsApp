@@ -17,7 +17,7 @@ class HabitsViewModel @Inject constructor(
 ) : ViewModel(){
 
     var habits by mutableStateOf(emptyList<Habit>())
-    var selectedHabit by mutableStateOf(Habit(0,"",0))
+    var selectedHabit by mutableStateOf(Habit(0,"",0, 0))
 
     fun getHabits() {
         viewModelScope.launch {
