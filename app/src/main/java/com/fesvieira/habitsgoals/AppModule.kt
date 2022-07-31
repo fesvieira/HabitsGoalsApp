@@ -2,6 +2,10 @@ package com.fesvieira.habitsgoals
 
 import android.content.Context
 import androidx.room.Room
+import com.fesvieira.habitsgoals.repository.HabitDao
+import com.fesvieira.habitsgoals.repository.HabitDatabase
+import com.fesvieira.habitsgoals.repository.HabitRepository
+import com.fesvieira.habitsgoals.repository.HabitsRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

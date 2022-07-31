@@ -1,7 +1,8 @@
-package com.fesvieira.habitsgoals
+package com.fesvieira.habitsgoals.repository
 
 import androidx.room.*
 import androidx.room.OnConflictStrategy.IGNORE
+import com.fesvieira.habitsgoals.model.Habit
 import kotlinx.coroutines.flow.Flow
 
 @Dao

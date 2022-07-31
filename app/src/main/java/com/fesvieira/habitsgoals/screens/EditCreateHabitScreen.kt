@@ -12,8 +12,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.fesvieira.habitsgoals.Habit
-import com.fesvieira.habitsgoals.HabitsViewModel
+import com.fesvieira.habitsgoals.model.Habit
+import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme

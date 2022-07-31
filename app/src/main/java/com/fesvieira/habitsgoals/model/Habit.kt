@@ -1,4 +1,4 @@
-package com.fesvieira.habitsgoals
+package com.fesvieira.habitsgoals.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

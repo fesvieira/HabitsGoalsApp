@@ -1,11 +1,12 @@
-package com.fesvieira.habitsgoals
+package com.fesvieira.habitsgoals.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fesvieira.habitsgoals.model.Habit
+import com.fesvieira.habitsgoals.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,7 +49,7 @@ class HabitsViewModel @Inject constructor(
         }
     }
 
-    fun deleteHabit(habit:Habit) {
+    fun deleteHabit(habit: Habit) {
          viewModelScope.launch(Dispatchers.IO) {
              habitRepository.deleteHabit(habit)
          }

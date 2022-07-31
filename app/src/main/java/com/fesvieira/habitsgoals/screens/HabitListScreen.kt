@@ -3,7 +3,6 @@ package com.fesvieira.habitsgoals.screens
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,9 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
-import com.fesvieira.habitsgoals.Habit
+import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.HabitCardAdapter
-import com.fesvieira.habitsgoals.HabitsViewModel
+import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.ui.theme.black

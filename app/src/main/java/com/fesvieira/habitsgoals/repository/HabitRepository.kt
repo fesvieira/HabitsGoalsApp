@@ -1,5 +1,6 @@
-package com.fesvieira.habitsgoals
+package com.fesvieira.habitsgoals.repository
 
+import com.fesvieira.habitsgoals.model.Habit
 import kotlinx.coroutines.flow.Flow
 
 interface HabitRepository {
