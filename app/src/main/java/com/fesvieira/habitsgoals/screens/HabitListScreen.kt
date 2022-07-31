@@ -3,11 +3,9 @@ package com.fesvieira.habitsgoals.screens
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
@@ -21,8 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.*
 import com.fesvieira.habitsgoals.Habit
 import com.fesvieira.habitsgoals.HabitCardAdapter
 import com.fesvieira.habitsgoals.HabitsViewModel
@@ -49,10 +50,11 @@ fun HabitListScreen(
             TopAppBar(
                 backgroundColor = Blue700,
             ) {
-                Text (
+                Text(
                     text = "Habits List",
                     color = Color.White,
-                    modifier = Modifier.padding(start = 16.dp)
+                    modifier = Modifier.padding(start = 16.dp),
+                    letterSpacing = 2.sp
                 )
             }
         },
@@ -77,6 +79,37 @@ fun HabitListScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(top = 16.dp)
         ) {
+            if (list.isEmpty()) {
+                item {
+                    Column {
+                        Text(
+                            text = "Add your Habits to start your enhancement journey",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top = 40.dp, start = 40.dp, end = 40.dp)
+                        )
+
+                        val composition by rememberLottieComposition(
+                            spec = LottieCompositionSpec.RawRes(R.raw.rocket)
+                        )
+                        val logoAnimationState =
+                            animateLottieCompositionAsState(
+                                composition = composition,
+                                iterations = LottieConstants.IterateForever
+                            )
+
+                        LottieAnimation(
+                            composition = composition,
+                            progress = {
+                                logoAnimationState.progress
+                            },
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 16.dp, start = 32.dp, end = 32.dp)
+                                .size(250.dp)
+                        )
+                    }
+                }
+            }
             items(
                 items = list,
                 key = { listItem ->

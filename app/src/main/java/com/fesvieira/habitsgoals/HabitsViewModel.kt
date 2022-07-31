@@ -33,9 +33,9 @@ class HabitsViewModel @Inject constructor(
         }
     }
 
-    fun updateHabit(newName: String) {
+    fun updateHabit(newName: String, newGoal: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            selectedHabit = selectedHabit.copy(name = newName)
+            selectedHabit = selectedHabit.copy(name = newName, goal = newGoal)
             habitRepository.updateHabit(selectedHabit)
         }
     }

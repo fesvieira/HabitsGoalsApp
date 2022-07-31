@@ -31,8 +31,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen() {
-    val systemUiController = rememberSystemUiController()
-    systemUiController.setSystemBarsColor(black)
     HabitsGoalsTheme {
         Navigation()
     }
