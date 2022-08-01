@@ -25,7 +25,7 @@
 
 ## Animations
 
-### Free animations with open license, used from LottieFiles:
+### Free animations with open license, used from [LottieFiles](https://lottiefiles.com/):
 
  * [Rocket Animation](https://lottiefiles.com/106405-energy-rocket)
  * [Splash Screen](https://lottiefiles.com/99274-loading)
