@@ -27,5 +27,5 @@
 
 # Free animations with open license, used from lottie:
 
- * (Rocket Animation)[https://lottiefiles.com/106405-energy-rocket]
- * (Splash Screen)[https://lottiefiles.com/99274-loading]
+ * [Rocket Animation](https://lottiefiles.com/106405-energy-rocket)
+ * [Splash Screen](https://lottiefiles.com/99274-loading)
