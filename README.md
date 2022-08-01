@@ -2,6 +2,7 @@
 
   * 100 % Jetpack Compose UI components
   * Room for SQL and database management
+  * Swipe gestures
  
 
 ## Add and edit your habits
