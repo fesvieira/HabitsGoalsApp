@@ -73,7 +73,7 @@ fun EditCreateHabitScreen(
                                     Toast.makeText(
                                         context,
                                         "Only numbers allowed in goals field",
-                                        Toast.LENGTH_LONG
+                                        Toast.LENGTH_SHORT
                                     ).show()
                                     return@FloatingActionButton
                                 }
@@ -84,7 +84,7 @@ fun EditCreateHabitScreen(
                                     Toast.makeText(
                                         context,
                                         "Only numbers allowed in goals field",
-                                        Toast.LENGTH_LONG
+                                        Toast.LENGTH_SHORT
                                     ).show()
                                     return@FloatingActionButton
                                 }
