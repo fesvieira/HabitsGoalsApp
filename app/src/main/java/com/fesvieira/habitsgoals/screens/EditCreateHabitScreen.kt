@@ -1,22 +1,28 @@
 package com.fesvieira.habitsgoals.screens
 
-import androidx.compose.foundation.layout.*
+import android.text.TextUtils
+import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.fesvieira.habitsgoals.model.Habit
-import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
+import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 
 @Composable
 fun EditCreateHabitScreen(
@@ -32,6 +38,8 @@ fun EditCreateHabitScreen(
             else selectedHabit.goal.toString()
         )
     }
+
+    val context = LocalContext.current
 
     HabitsGoalsTheme {
         Scaffold(
@@ -52,16 +60,34 @@ fun EditCreateHabitScreen(
                     onClick = {
                         if (textName.isNotEmpty() && textGoal.isNotEmpty()) {
                             if (selectedHabit.name == "") {
-                                habitsViewModel.addHabit(
-                                    Habit(
-                                        id = 0,
-                                        name = textName,
-                                        strike = 0,
-                                        goal = textGoal.toInt()
+                                if (TextUtils.isDigitsOnly(textGoal)) {
+                                    habitsViewModel.addHabit(
+                                        Habit(
+                                            id = 0,
+                                            name = textName,
+                                            strike = 0,
+                                            goal = textGoal.toInt()
+                                        )
                                     )
-                                )
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Only numbers allowed in goals field",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    return@FloatingActionButton
+                                }
                             } else {
-                                habitsViewModel.updateHabit(textName, textGoal.toInt())
+                                if (TextUtils.isDigitsOnly(textGoal)) {
+                                    habitsViewModel.updateHabit(textName, textGoal.toInt())
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Only numbers allowed in goals field",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    return@FloatingActionButton
+                                }
                             }
                         }
                         navController.navigate("habit-list-screen")
