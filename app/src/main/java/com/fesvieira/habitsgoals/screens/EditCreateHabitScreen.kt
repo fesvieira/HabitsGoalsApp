@@ -101,11 +101,13 @@ fun EditCreateHabitScreen(
                         contentDescription = null,
                     )
                 }
-            }) {
+            }) { paddingValues ->
             Column(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
             ) {
                 OutlinedTextField(
                     modifier = Modifier.padding(top = 16.dp),
@@ -134,6 +136,5 @@ fun EditCreateHabitScreen(
                 )
             }
         }
-
     }
 }

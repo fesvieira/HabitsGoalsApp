@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
 import com.fesvieira.habitsgoals.model.Habit
-import com.fesvieira.habitsgoals.HabitCardAdapter
+import com.fesvieira.habitsgoals.adapter.HabitCardAdapter
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.ui.theme.Blue700

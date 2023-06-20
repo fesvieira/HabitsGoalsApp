@@ -1,4 +1,4 @@
-package com.fesvieira.habitsgoals
+package com.fesvieira.habitsgoals.adapter
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,6 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.ui.theme.Blue500
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 
