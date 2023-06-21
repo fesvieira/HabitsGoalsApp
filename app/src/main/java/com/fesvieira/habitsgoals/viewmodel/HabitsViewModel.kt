@@ -28,12 +28,6 @@ class HabitsViewModel @Inject constructor(
         }
     }
 
-    fun getHabitById(habitId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            habitRepository.getHabitById(habitId)
-        }
-    }
-
     fun updateHabit(newName: String, newGoal: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             selectedHabit = selectedHabit.copy(name = newName, goal = newGoal)

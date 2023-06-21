@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.model.Habit
+import com.fesvieira.habitsgoals.navigation.Routes.HabitList
 import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
@@ -90,7 +91,7 @@ fun EditCreateHabitScreen(
                                 }
                             }
                         }
-                        navController.navigate("habit-list-screen")
+                        navController.navigate(HabitList)
                     },
                 ) {
                     Icon(

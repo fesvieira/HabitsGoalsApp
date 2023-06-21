@@ -1,6 +1,5 @@
 package com.fesvieira.habitsgoals.screens
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -13,8 +12,8 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.navigation.Routes.HabitList
 
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun SplashScreen(navController: NavHostController) {
     val composition by rememberLottieComposition(
@@ -34,6 +33,6 @@ fun SplashScreen(navController: NavHostController) {
     )
 
     if (logoAnimationState.isAtEnd && logoAnimationState.isPlaying) {
-        navController.navigate("habit-list-screen")
+        navController.navigate(HabitList)
     }
 }

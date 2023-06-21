@@ -27,6 +27,7 @@ import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.adapter.HabitCardAdapter
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
 import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.ui.theme.black
 
@@ -61,22 +62,22 @@ fun HabitListScreen(
             FloatingActionButton(
                 onClick = {
                     habitsViewModel.selectedHabit = Habit(0, "", 0, 0)
-                    navController.navigate("edit-create-habit-screen")
+                    navController.navigate(EditHabit)
                 },
 
                 ) {
                 Icon(
-                    painter = painterResource(
-                        id = R.drawable.ic_add,
-                    ),
+                    painter = painterResource(R.drawable.ic_add),
                     tint = Color.White,
                     contentDescription = null,
                 )
             }
-        }) {
+        }) { paddingValues ->
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(top = 16.dp)
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(top = 16.dp)
         ) {
             if (list.isEmpty()) {
                 item {
@@ -172,7 +173,7 @@ fun HabitListScreen(
                                         strike = item.strike,
                                         goal = item.goal
                                     )
-                                navController.navigate("edit-create-habit-screen")
+                                navController.navigate(EditHabit)
                             },
                             onAddClickListener = {
                                 habitsViewModel.selectedHabit = item
