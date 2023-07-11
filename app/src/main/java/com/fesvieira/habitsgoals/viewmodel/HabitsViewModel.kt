@@ -16,7 +16,6 @@ import javax.inject.Inject
 class HabitsViewModel @Inject constructor(
     private val habitRepository: HabitRepository
 ) : ViewModel() {
-
     var habits by mutableStateOf(emptyList<Habit>())
     var selectedHabit by mutableStateOf(Habit(0, "", 0, 0))
 
