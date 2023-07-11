@@ -1,7 +1,5 @@
 package com.fesvieira.habitsgoals.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.room.*
 import androidx.room.OnConflictStrategy.Companion.IGNORE
 import com.fesvieira.habitsgoals.model.Habit
@@ -9,10 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HabitDao {
-
-    @Query("SELECT * FROM HABIT_LIST")
-    fun observeHabits(): LiveData<List<Habit>>
-
     @Query("SELECT * FROM HABIT_LIST ORDER BY id ASC")
     fun getHabits(): Flow<List<Habit>>
 
