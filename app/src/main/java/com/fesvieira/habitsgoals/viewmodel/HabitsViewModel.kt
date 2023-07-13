@@ -15,43 +15,32 @@ import javax.inject.Inject
 @HiltViewModel
 class HabitsViewModel @Inject constructor(
     private val habitRepository: HabitRepository
-) : ViewModel(){
-
+) : ViewModel() {
     var habits by mutableStateOf(emptyList<Habit>())
-    var selectedHabit by mutableStateOf(Habit(0,"",0, 0))
+    var selectedHabit by mutableStateOf(Habit(0, "", 0, 0))
 
-    fun getHabits() {
-        viewModelScope.launch {
-            habitRepository.getHabits().collect { habitsList ->
-                habits = habitsList
-            }
+    fun getHabits() = viewModelScope.launch {
+        habitRepository.getHabits().collect { habitsList ->
+            habits = habitsList
         }
     }
 
-    fun updateHabit(newName: String, newGoal: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            selectedHabit = selectedHabit.copy(name = newName, goal = newGoal)
-            habitRepository.updateHabit(selectedHabit)
-        }
+    fun updateHabit(newName: String, newGoal: Int) = viewModelScope.launch(Dispatchers.IO) {
+        selectedHabit = selectedHabit.copy(name = newName, goal = newGoal)
+        habitRepository.updateHabit(selectedHabit)
     }
 
-    fun addStrike() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val newStrike = selectedHabit.strike + 1
-            selectedHabit = selectedHabit.copy(strike = newStrike)
-            habitRepository.updateHabit(selectedHabit)
-        }
+    fun addStrike() = viewModelScope.launch(Dispatchers.IO) {
+        val newStrike = selectedHabit.strike + 1
+        selectedHabit = selectedHabit.copy(strike = newStrike)
+        habitRepository.updateHabit(selectedHabit)
     }
 
-    fun deleteHabit(habit: Habit) {
-         viewModelScope.launch(Dispatchers.IO) {
-             habitRepository.deleteHabit(habit)
-         }
+    fun deleteHabit(habit: Habit) = viewModelScope.launch(Dispatchers.IO) {
+        habitRepository.deleteHabit(habit)
     }
 
-    fun addHabit(habit: Habit) {
-        viewModelScope.launch (Dispatchers.IO){
-            habitRepository.addHabit(habit)
-        }
+    fun addHabit(habit: Habit) = viewModelScope.launch(Dispatchers.IO) {
+        habitRepository.addHabit(habit)
     }
 }
