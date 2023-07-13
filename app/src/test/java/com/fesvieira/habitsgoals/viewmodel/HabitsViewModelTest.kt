@@ -1,30 +1,37 @@
 package com.fesvieira.habitsgoals.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.repository.FakeHabitsRepository
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(AndroidJUnit4::class)
+@ExperimentalCoroutinesApi
 class HabitsViewModelTest {
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    private val dispatcher = StandardTestDispatcher()
+    private val scope = TestScope(dispatcher)
 
     private lateinit var repository: FakeHabitsRepository
     private lateinit var viewModel: HabitsViewModel
     private lateinit var habitsList: MutableList<Habit>
 
     @Before
-    fun setup() = runTest {
+    fun setup() = scope.runTest {
+        Dispatchers.setMain(dispatcher)
         habitsList = mutableListOf(
             Habit(1, "habit1", strike = 1, goal = 4),
             Habit(2, "habit2", strike = 1, goal = 4),
@@ -35,13 +42,18 @@ class HabitsViewModelTest {
         viewModel.getHabits()
     }
 
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
     @Test
-    fun getHabits() = runTest {
+    fun getHabits() {
         assertThat(viewModel.habits).isNotEmpty()
     }
 
     @Test
-    fun addHabit() = runTest {
+    fun addHabit() {
         val newHabit = Habit(4,"aoba", 3,9)
         viewModel.addHabit(newHabit)
 
