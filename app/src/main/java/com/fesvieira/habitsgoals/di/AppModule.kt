@@ -1,4 +1,4 @@
-package com.fesvieira.habitsgoals
+package com.fesvieira.habitsgoals.di
 
 import android.content.Context
 import androidx.room.Room
@@ -14,7 +14,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AppModule {
+object AppModule {
     @Provides
     fun provideHabitDb(
         @ApplicationContext
