@@ -6,12 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +26,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.navigation.Routes.HabitList
-import com.fesvieira.habitsgoals.ui.theme.Blue700
+import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
+import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 
 @Composable
@@ -49,9 +47,9 @@ fun EditCreateHabitScreen(
     }
 
     Scaffold(
-        topBar = { TopBar() },
+        topBar = { TopBar(title = stringResource(R.string.habit_factory)) },
         floatingActionButton = {
-            CreateHabitButton {
+            AppFloatActionButton(icon = painterResource(R.drawable.ic_save)) {
                 habitsViewModel.updateOrAddHabit(textName, textGoal,
                     onError = {
                         Toast.makeText(
@@ -95,30 +93,5 @@ fun EditCreateHabitScreen(
                 color = Color.Gray
             )
         }
-    }
-}
-
-@Composable
-private fun TopBar() {
-    TopAppBar(
-        backgroundColor = Blue700,
-    ) {
-        Text(
-            text = stringResource(R.string.habit_factory),
-            color = Color.White,
-            modifier = Modifier.padding(start = 16.dp),
-            letterSpacing = 2.sp
-        )
-    }
-}
-
-@Composable
-private fun CreateHabitButton(onClick: () -> Unit) {
-    FloatingActionButton(onClick) {
-        Icon(
-            painter = painterResource(R.drawable.ic_save),
-            tint = Color.White,
-            contentDescription = stringResource(R.string.save_icon),
-        )
     }
 }

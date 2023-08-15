@@ -21,15 +21,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
+import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.HabitCard
-import com.fesvieira.habitsgoals.ui.theme.Blue700
-import com.fesvieira.habitsgoals.ui.theme.black
+import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -47,9 +46,9 @@ fun HabitListScreen(
     }
 
     Scaffold(
-        topBar = { TopBar() },
+        topBar = { TopBar(title = stringResource(R.string.habits_list)) },
         floatingActionButton = {
-            NewHabitButton {
+            AppFloatActionButton(icon = painterResource(R.drawable.ic_add)) {
                 habitsViewModel.selectedHabit = emptyHabit
                 navController.navigate(EditHabit)
             }
@@ -126,38 +125,13 @@ fun HabitListScreen(
     }
 }
 
-@Composable
-private fun TopBar() {
-    TopAppBar(
-        backgroundColor = Blue700,
-    ) {
-        Text(
-            text = stringResource(R.string.habits_list),
-            color = Color.White,
-            modifier = Modifier.padding(start = 16.dp),
-            letterSpacing = 2.sp
-        )
-    }
-}
-
-@Composable
-fun NewHabitButton(onClick: () -> Unit) {
-    FloatingActionButton(onClick) {
-        Icon(
-            painter = painterResource(R.drawable.ic_add),
-            tint = Color.White,
-            contentDescription = stringResource(R.string.add_icon),
-        )
-    }
-}
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun SwipeToDismissDynamicBackground(dismissState: DismissState) {
     val color by animateColorAsState(
         when (dismissState.targetValue) {
-            DismissValue.Default -> black
-            else -> Color.Red
+            DismissValue.Default -> MaterialTheme.colors.background
+            else -> MaterialTheme.colors.error
         }, label = "color"
     )
     val alignment = Alignment.CenterEnd
@@ -178,6 +152,7 @@ private fun SwipeToDismissDynamicBackground(dismissState: DismissState) {
         Icon(
             icon,
             contentDescription = stringResource(R.string.delete_icon),
+            tint = Color.White,
             modifier = Modifier.scale(scale)
         )
     }

@@ -1,5 +1,6 @@
 package com.fesvieira.habitsgoals.navigation
 
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -12,7 +13,6 @@ import com.fesvieira.habitsgoals.navigation.Routes.Splash
 import com.fesvieira.habitsgoals.ui.screens.EditCreateHabitScreen
 import com.fesvieira.habitsgoals.ui.screens.HabitListScreen
 import com.fesvieira.habitsgoals.ui.screens.SplashScreen
-import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -23,7 +23,6 @@ fun MainNavHost() {
 
     val systemUiController = rememberSystemUiController()
 
-
     NavHost(navController = navController, startDestination = Splash) {
         composable(Splash) {
             systemUiController.setSystemBarsColor(Color.Black)
@@ -31,7 +30,7 @@ fun MainNavHost() {
         }
 
         composable(HabitList) {
-            systemUiController.setSystemBarsColor(Blue700)
+            systemUiController.setSystemBarsColor(MaterialTheme.colors.primary)
             HabitListScreen(
                 navController = navController,
                 habitsViewModel = habitsViewModel
