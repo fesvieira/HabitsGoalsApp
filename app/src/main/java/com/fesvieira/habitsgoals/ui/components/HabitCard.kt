@@ -16,15 +16,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.ui.theme.Blue500
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HabitCard(
-    name: String,
-    info: Int,
-    goal: Int,
+    habit: Habit,
     onClickListener: () -> Unit,
     onAddClickListener: () -> Unit
 ) {
@@ -49,12 +48,14 @@ fun HabitCard(
                         .weight(1f)
                         .padding(8.dp)
                 ) {
-                    Text(
-                        text = name
-                    )
+                    Text(text = habit.name)
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = stringResource(R.string.current_strike, info.toString(), goal.toString()),
+                        text = stringResource(
+                            R.string.current_strike,
+                            habit.strike.toString(),
+                            habit.goal.toString()
+                        ),
                         fontSize = 12.sp,
                         color = Color.Gray
                     )
@@ -67,9 +68,7 @@ fun HabitCard(
                         .background(Blue500),
                 ) {
                     Icon(
-                        painter = painterResource(
-                            id = R.drawable.ic_add
-                        ),
+                        painter = painterResource(R.drawable.ic_add),
                         contentDescription = stringResource(R.string.add_icon),
                     )
                 }
@@ -82,9 +81,7 @@ fun HabitCard(
 @Composable
 fun PreviewHabitCardAdapter() {
     HabitCard(
-        name = "Clean desk",
-        info = 5,
-        goal = 25,
+        habit = Habit(0, "Meditate", 0, 0),
         onClickListener = {},
         onAddClickListener = {},
     )

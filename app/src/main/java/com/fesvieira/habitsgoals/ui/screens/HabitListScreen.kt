@@ -24,14 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
-import com.fesvieira.habitsgoals.model.Habit
-import com.fesvieira.habitsgoals.ui.components.HabitCard
-import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
+import com.fesvieira.habitsgoals.ui.components.HabitCard
 import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.ui.theme.black
+import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -114,17 +113,9 @@ fun HabitListScreen(
                     background = { SwipeToDismissDynamicBackground(dismissState) },
                     dismissContent = {
                         HabitCard(
-                            name = item.name,
-                            info = item.strike,
-                            goal = item.goal,
+                            habit = item,
                             onClickListener = {
-                                habitsViewModel.selectedHabit =
-                                    Habit(
-                                        id = item.id,
-                                        name = item.name,
-                                        strike = item.strike,
-                                        goal = item.goal
-                                    )
+                                habitsViewModel.selectedHabit = item
                                 navController.navigate(EditHabit)
                             },
                             onAddClickListener = {
