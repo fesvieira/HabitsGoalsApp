@@ -3,7 +3,10 @@
   * 100 % Jetpack Compose UI components
   * Room for SQL and database management
   * Swipe gestures
- 
+
+## Preview
+
+https://github.com/fesvieira/HabitsGoalsApp/assets/65823376/22ed4732-0f6f-4e07-a823-51760aa1da73
 
 ## Add and edit your habits
 <p align="center">
