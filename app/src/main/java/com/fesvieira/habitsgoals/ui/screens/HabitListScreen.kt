@@ -1,4 +1,4 @@
-package com.fesvieira.habitsgoals.screens
+package com.fesvieira.habitsgoals.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
@@ -18,15 +18,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
 import com.fesvieira.habitsgoals.model.Habit
-import com.fesvieira.habitsgoals.adapter.HabitCardAdapter
+import com.fesvieira.habitsgoals.ui.components.HabitCard
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
 import com.fesvieira.habitsgoals.ui.theme.Blue700
 import com.fesvieira.habitsgoals.ui.theme.black
@@ -37,42 +39,23 @@ fun HabitListScreen(
     habitsViewModel: HabitsViewModel,
     navController: NavController
 ) {
+    val list = habitsViewModel.habits
 
     BackHandler {}
 
     LaunchedEffect(Unit) {
         habitsViewModel.getHabits()
     }
-    val list = habitsViewModel.habits
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                backgroundColor = Blue700,
-            ) {
-                Text(
-                    text = "Habits List",
-                    color = Color.White,
-                    modifier = Modifier.padding(start = 16.dp),
-                    letterSpacing = 2.sp
-                )
-            }
-        },
+        topBar = { TopBar() },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    habitsViewModel.selectedHabit = Habit(0, "", 0, 0)
-                    navController.navigate(EditHabit)
-                },
-
-                ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_add),
-                    tint = Color.White,
-                    contentDescription = null,
-                )
+            NewHabitButton {
+                habitsViewModel.selectedHabit = emptyHabit
+                navController.navigate(EditHabit)
             }
         }) { paddingValues ->
+
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
@@ -83,7 +66,7 @@ fun HabitListScreen(
                 item {
                     Column {
                         Text(
-                            text = "Add your Habits to start your enhancement journey",
+                            text = stringResource(R.string.add_your_habits_to_start),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(top = 40.dp, start = 40.dp, end = 40.dp)
                         )
@@ -110,6 +93,7 @@ fun HabitListScreen(
                     }
                 }
             }
+
             items(
                 items = list,
                 key = { listItem ->
@@ -124,44 +108,12 @@ fun HabitListScreen(
 
                 SwipeToDismiss(
                     state = dismissState,
-                    modifier = Modifier
-                        .padding(vertical = 1.dp),
-                    directions = setOf(
-                        DismissDirection.EndToStart
-                    ),
-                    dismissThresholds = { direction ->
-                        FractionalThreshold(if (direction == DismissDirection.EndToStart) 0.1f else 0.05f)
-                    },
-                    background = {
-                        val color by animateColorAsState(
-                            when (dismissState.targetValue) {
-                                DismissValue.Default -> black
-                                else -> Color.Red
-                            }
-                        )
-                        val alignment = Alignment.CenterEnd
-                        val icon = Icons.Default.Delete
-
-                        val scale by animateFloatAsState(
-                            if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
-                        )
-
-                        Box(
-                            Modifier
-                                .fillMaxSize()
-                                .background(color)
-                                .padding(horizontal = 20.dp),
-                            contentAlignment = alignment
-                        ) {
-                            Icon(
-                                icon,
-                                contentDescription = "Delete Icon",
-                                modifier = Modifier.scale(scale)
-                            )
-                        }
-                    },
+                    modifier = Modifier.padding(vertical = 1.dp),
+                    directions = setOf(DismissDirection.EndToStart),
+                    dismissThresholds = { FractionalThreshold(0.1f) },
+                    background = { SwipeToDismissDynamicBackground(dismissState) },
                     dismissContent = {
-                        HabitCardAdapter(
+                        HabitCard(
                             name = item.name,
                             info = item.strike,
                             goal = item.goal,
@@ -184,5 +136,62 @@ fun HabitListScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun TopBar() {
+    TopAppBar(
+        backgroundColor = Blue700,
+    ) {
+        Text(
+            text = stringResource(R.string.habits_list),
+            color = Color.White,
+            modifier = Modifier.padding(start = 16.dp),
+            letterSpacing = 2.sp
+        )
+    }
+}
+
+@Composable
+fun NewHabitButton(onClick: () -> Unit) {
+    FloatingActionButton(onClick) {
+        Icon(
+            painter = painterResource(R.drawable.ic_add),
+            tint = Color.White,
+            contentDescription = stringResource(R.string.add_icon),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun SwipeToDismissDynamicBackground(dismissState: DismissState) {
+    val color by animateColorAsState(
+        when (dismissState.targetValue) {
+            DismissValue.Default -> black
+            else -> Color.Red
+        }, label = "color"
+    )
+    val alignment = Alignment.CenterEnd
+    val icon = Icons.Default.Delete
+
+    val scale by animateFloatAsState(
+        if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f,
+        label = "scale"
+    )
+
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(color)
+            .padding(horizontal = 20.dp),
+        contentAlignment = alignment
+    ) {
+        Icon(
+            icon,
+            contentDescription = stringResource(R.string.delete_icon),
+            modifier = Modifier.scale(scale)
+        )
     }
 }

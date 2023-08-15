@@ -14,4 +14,8 @@ data class Habit(
     val strike: Int,
     @ColumnInfo(name = "goal")
     val goal: Int,
-)
+) {
+    companion object {
+        val emptyHabit = Habit(0, "", 0, 0)
+    }
+}

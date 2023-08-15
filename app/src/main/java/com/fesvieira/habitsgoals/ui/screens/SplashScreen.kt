@@ -1,4 +1,4 @@
-package com.fesvieira.habitsgoals.screens
+package com.fesvieira.habitsgoals.ui.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
