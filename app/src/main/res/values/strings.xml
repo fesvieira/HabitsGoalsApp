@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Habits&amp;Goals</string>
+    <string name="habit_factory">Habit Factory</string>
+    <string name="only_numbers_allowed">Only numbers allowed in goals field</string>
+    <string name="habit_name">Habit name</string>
+    <string name="goal">Goal</string>
+    <string name="how_many_days_do_you">How many days do you want to repeat the habit?</string>
+    <string name="add_your_habits_to_start">Add your Habits to start your enhancement journey</string>
+    <string name="delete_icon">Delete Icon</string>
+    <string name="current_strike">Current Strike: %s days | Goal: %s days</string>
+    <string name="habits_list">Habits List</string>
+    <string name="add_icon">Add Habit Button</string>
+    <string name="save_icon">Save Habit Button</string>
 </resources>
