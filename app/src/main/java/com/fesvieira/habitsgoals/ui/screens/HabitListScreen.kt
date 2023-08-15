@@ -81,9 +81,7 @@ fun HabitListScreen(
 
                         LottieAnimation(
                             composition = composition,
-                            progress = {
-                                logoAnimationState.progress
-                            },
+                            progress = { logoAnimationState.progress },
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(top = 16.dp, start = 32.dp, end = 32.dp)
@@ -95,9 +93,7 @@ fun HabitListScreen(
 
             items(
                 items = list,
-                key = { listItem ->
-                    listItem.hashCode()
-                },
+                key = { it.hashCode() },
             ) { item ->
                 val dismissState = rememberDismissState()
 
