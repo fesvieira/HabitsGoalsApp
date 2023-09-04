@@ -14,21 +14,25 @@ val Typography = Typography(
     h1 = TextStyle(
         fontFamily = FontFamily(Font(R.font.proxima_nova)),
         fontWeight = FontWeight.Bold,
-        fontSize = 32.sp
+        fontSize = 32.sp,
+        lineHeight = 38.sp
     ),
     body1 = TextStyle(
         fontFamily = FontFamily(Font(R.font.proxima_nova)),
         fontWeight = FontWeight.Bold,
-        fontSize = 18.sp
+        fontSize = 18.sp,
+        lineHeight = 24.sp
     ),
     body2 = TextStyle(
         fontFamily = FontFamily(Font(R.font.proxima_nova)),
         fontWeight = FontWeight.Normal,
-        fontSize = 18.sp
+        fontSize = 18.sp,
+        lineHeight = 24.sp
     ),
     button = TextStyle(
         fontFamily = FontFamily(Font(R.font.proxima_nova)),
         fontWeight = FontWeight.Bold,
-        fontSize = 20.sp
+        fontSize = 20.sp,
+        lineHeight = 24.sp
     )
 )

@@ -31,7 +31,9 @@ import com.fesvieira.habitsgoals.ui.theme.md_theme_light_secondary
 @Composable
 fun AppDialog(
     yesCallback: () -> Unit,
-    noCallback: () -> Unit
+    noCallback: () -> Unit,
+    habitName: String,
+    modifier: Modifier = Modifier
 ) {
     val isPreview = LocalInspectionMode.current
 
@@ -43,7 +45,7 @@ fun AppDialog(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
+            modifier = modifier
                 .background(md_theme_light_secondary, RoundedCornerShape(32.dp))
                 .padding(32.dp)
         ) {
@@ -61,7 +63,7 @@ fun AppDialog(
             )
 
             Text(
-                text = "Are you sure you want to delete this habit? This action can not be undone",
+                text = "Are you sure you want to delete the habit: $habitName? This action can not be undone",
                 color = Color.White,
                 style = Typography.body2,
                 textAlign = TextAlign.Center
@@ -78,9 +80,10 @@ fun AppDialog(
                         disabledContainerColor = md_theme_dark_tertiary,
                         disabledContentColor = Color.White,
                     ),
-                    onClick = { /*TODO*/ }) {
+                    onClick = { yesCallback() }) {
                     Text(text = "Yes", style = Typography.button)
                 }
+
                 Button(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = md_theme_dark_tertiary,
@@ -88,7 +91,7 @@ fun AppDialog(
                         disabledContainerColor = md_theme_dark_tertiary,
                         disabledContentColor = Color.White,
                     ),
-                    onClick = { /*TODO*/ }) {
+                    onClick = { noCallback() }) {
                     Text(text = "No", style = Typography.button)
                 }
             }
@@ -100,6 +103,6 @@ fun AppDialog(
 @Composable
 fun PreviewAppDialog() {
     HabitsGoalsTheme {
-        AppDialog({}, {})
+        AppDialog({}, {}, "")
     }
 }
