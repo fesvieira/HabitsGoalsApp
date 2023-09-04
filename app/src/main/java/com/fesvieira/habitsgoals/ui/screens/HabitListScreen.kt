@@ -1,5 +1,6 @@
 package com.fesvieira.habitsgoals.ui.screens
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -13,10 +14,15 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -30,6 +36,8 @@ import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.HabitCard
 import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -38,8 +46,19 @@ fun HabitListScreen(
     navController: NavController
 ) {
     val list = habitsViewModel.habits
+    val context = LocalContext.current
+    var shouldLeaveOnBackPress by remember { mutableStateOf(false)}
+    val coroutineScope = rememberCoroutineScope()
 
-    BackHandler {}
+    BackHandler(!shouldLeaveOnBackPress) {
+        coroutineScope.launch {
+            shouldLeaveOnBackPress = true
+            delay(3500)
+            shouldLeaveOnBackPress = false
+        }
+
+        Toast.makeText(context, "Press back again to leave", Toast.LENGTH_LONG).show()
+    }
 
     LaunchedEffect(Unit) {
         habitsViewModel.getHabits()
