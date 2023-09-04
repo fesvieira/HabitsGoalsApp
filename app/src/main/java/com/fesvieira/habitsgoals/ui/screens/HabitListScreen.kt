@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,12 +39,10 @@ import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.HabitCard
 import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun HabitListScreen(
     habitsViewModel: HabitsViewModel,
@@ -129,7 +128,9 @@ fun HabitListScreen(
 
                 SwipeToDismiss(
                     state = dismissState,
-                    modifier = Modifier.padding(vertical = 1.dp),
+                    modifier = Modifier
+                        .padding(vertical = 1.dp)
+                        .animateItemPlacement(),
                     directions = setOf(DismissDirection.EndToStart),
                     dismissThresholds = { FractionalThreshold(0.1f) },
                     background = { SwipeToDismissDynamicBackground(dismissState) },
