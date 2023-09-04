@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.fesvieira.habitsgoals.R
-import com.fesvieira.habitsgoals.navigation.Routes.HabitList
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
@@ -59,7 +58,7 @@ fun EditCreateHabitScreen(
                         ).show()
                     }
                 )
-                navController.navigate(HabitList)
+                navController.popBackStack()
             }
         }
     ) { paddingValues ->

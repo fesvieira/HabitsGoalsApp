@@ -1,5 +1,7 @@
 package com.fesvieira.habitsgoals.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,7 +31,20 @@ fun MainNavHost() {
             )
         }
 
-        composable(EditHabit) {
+        composable(
+            route = EditHabit,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                )
+            }) {
             EditCreateHabitScreen(
                 navController = navController,
                 habitsViewModel = habitsViewModel
