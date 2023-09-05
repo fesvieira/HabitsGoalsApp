@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,7 +50,7 @@ fun HabitListScreen(
     habitsViewModel: HabitsViewModel,
     navController: NavController
 ) {
-    val list = habitsViewModel.habits
+    val habitsList = habitsViewModel.habits
     val context = LocalContext.current
     var shouldLeaveOnBackPress by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -106,11 +107,11 @@ fun HabitListScreen(
                 .padding(paddingValues)
                 .padding(top = 16.dp)
         ) {
-            if (list.isEmpty()) {
+            if (habitsList.isEmpty()) {
                 emptyHabitUI(this)
             } else {
                 items(
-                    items = list,
+                    items = habitsList,
                     key = { it.hashCode() },
                 ) { item ->
                     val dismissState = rememberDismissState(
@@ -118,7 +119,7 @@ fun HabitListScreen(
                             if (dismissValue == DismissValue.DismissedToStart) {
                                 habitToDelete = item
                             }
-                            false
+                            true
                         }
                     )
 
@@ -128,7 +129,7 @@ fun HabitListScreen(
                             .padding(vertical = 1.dp)
                             .animateItemPlacement(),
                         directions = setOf(DismissDirection.EndToStart),
-                        dismissThresholds = { FractionalThreshold(0.1f) },
+                        dismissThresholds = { FractionalThreshold(0.3f) },
                         background = { SwipeToDismissDynamicBackground(dismissState) },
                         dismissContent = {
                             HabitCard(
@@ -183,17 +184,20 @@ private fun emptyHabitUI(lazyListScope: LazyListScope) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun SwipeToDismissDynamicBackground(dismissState: DismissState) {
+    val isSwiping by remember(dismissState) {
+        derivedStateOf { dismissState.direction == -1f && dismissState.progress.fraction > 0.1f }
+    }
     val color by animateColorAsState(
-        when (dismissState.targetValue) {
-            DismissValue.Default -> MaterialTheme.colors.background
-            else -> MaterialTheme.colors.error
+        when  {
+            isSwiping -> MaterialTheme.colors.error
+            else -> MaterialTheme.colors.background
         }, label = "color"
     )
     val alignment = Alignment.CenterEnd
     val icon = Icons.Default.Delete
 
     val scale by animateFloatAsState(
-        if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f,
+        if (isSwiping) 1f else 0.5f,
         label = "scale"
     )
 
