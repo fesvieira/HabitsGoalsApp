@@ -13,11 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,7 +31,10 @@ import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun EditCreateHabitScreen(
     navController: NavController,
@@ -36,6 +42,8 @@ fun EditCreateHabitScreen(
 ) {
     val selectedHabit = remember { habitsViewModel.selectedHabit }
     val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val coroutineScope = rememberCoroutineScope()
 
     var textName by remember { mutableStateOf(selectedHabit.name) }
     var textGoal by remember {
@@ -58,7 +66,11 @@ fun EditCreateHabitScreen(
                         ).show()
                     }
                 )
-                navController.popBackStack()
+                coroutineScope.launch {
+                    keyboardController?.hide()
+                    delay(200)
+                    navController.popBackStack()
+                }
             }
         }
     ) { paddingValues ->
