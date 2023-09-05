@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -119,6 +120,7 @@ fun HabitListScreen(
                             if (dismissValue == DismissValue.DismissedToStart) {
                                 habitToDelete = item
                             }
+
                             true
                         }
                     )
@@ -127,7 +129,7 @@ fun HabitListScreen(
                         state = dismissState,
                         modifier = Modifier
                             .padding(vertical = 1.dp)
-                            .animateItemPlacement(),
+                            .animateItemPlacement(tween(300)),
                         directions = setOf(DismissDirection.EndToStart),
                         dismissThresholds = { FractionalThreshold(0.3f) },
                         background = { SwipeToDismissDynamicBackground(dismissState) },
@@ -188,16 +190,14 @@ private fun SwipeToDismissDynamicBackground(dismissState: DismissState) {
         derivedStateOf { dismissState.direction == -1f && dismissState.progress.fraction > 0.1f }
     }
     val color by animateColorAsState(
-        when  {
+        when {
             isSwiping -> MaterialTheme.colors.error
             else -> MaterialTheme.colors.background
         }, label = "color"
     )
-    val alignment = Alignment.CenterEnd
-    val icon = Icons.Default.Delete
 
     val scale by animateFloatAsState(
-        if (isSwiping) 1f else 0.5f,
+        if (isSwiping) 1f else 0.001f,
         label = "scale"
     )
 
@@ -206,10 +206,10 @@ private fun SwipeToDismissDynamicBackground(dismissState: DismissState) {
             .fillMaxSize()
             .background(color)
             .padding(horizontal = 20.dp),
-        contentAlignment = alignment
+        contentAlignment = Alignment.CenterEnd
     ) {
         Icon(
-            icon,
+            Icons.Default.Delete,
             contentDescription = stringResource(R.string.delete_icon),
             tint = Color.White,
             modifier = Modifier.scale(scale)
