@@ -11,4 +11,7 @@
     <string name="habits_list">Habits List</string>
     <string name="add_icon">Add Habit Button</string>
     <string name="save_icon">Save Habit Button</string>
+    <string name="press_back">Press back again to leave</string>
+    <string name="undo">UNDO</string>
+    <string name="deleted_x">Deleted %s</string>
 </resources>

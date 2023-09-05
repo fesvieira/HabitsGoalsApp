@@ -63,7 +63,7 @@ fun HabitListScreen(
             shouldLeaveOnBackPress = false
         }
 
-        Toast.makeText(context, "Press back again to leave", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, context.getString(R.string.press_back), Toast.LENGTH_LONG).show()
     }
 
     LaunchedEffect(Unit) {
