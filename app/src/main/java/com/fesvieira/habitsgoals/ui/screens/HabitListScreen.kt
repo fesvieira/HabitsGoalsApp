@@ -34,8 +34,8 @@ import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
-import com.fesvieira.habitsgoals.ui.components.AppDialog
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
+import com.fesvieira.habitsgoals.ui.components.DeleteHabitSnackbar
 import com.fesvieira.habitsgoals.ui.components.HabitCard
 import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
@@ -50,9 +50,10 @@ fun HabitListScreen(
 ) {
     val list = habitsViewModel.habits
     val context = LocalContext.current
-    var shouldLeaveOnBackPress by remember { mutableStateOf(false)}
+    var shouldLeaveOnBackPress by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     var habitToDelete by remember { mutableStateOf<Habit?>(null) }
+    val snackBarHostState = remember { SnackbarHostState() }
 
     BackHandler(!shouldLeaveOnBackPress) {
         coroutineScope.launch {
@@ -68,6 +69,18 @@ fun HabitListScreen(
         habitsViewModel.getHabits()
     }
 
+    LaunchedEffect(habitToDelete) {
+        if (habitToDelete != null) {
+            habitsViewModel.deleteHabit(habitToDelete ?: return@LaunchedEffect)
+            val job = launch {
+                snackBarHostState.showSnackbar("", duration = SnackbarDuration.Indefinite)
+            }
+            delay(5000)
+            job.cancel()
+            habitToDelete = null
+        }
+    }
+
     Scaffold(
         topBar = { TopBar(title = stringResource(R.string.habits_list)) },
         floatingActionButton = {
@@ -75,7 +88,17 @@ fun HabitListScreen(
                 habitsViewModel.selectedHabit = emptyHabit
                 navController.navigate(EditHabit)
             }
-        }) { paddingValues ->
+        },
+        snackbarHost = {
+            DeleteHabitSnackbar(
+                snackbarHostState = snackBarHostState,
+                habitName = habitToDelete?.name ?: ""
+            ) {
+                habitsViewModel.addHabit(habitToDelete ?: return@DeleteHabitSnackbar)
+                habitToDelete = null
+            }
+        }
+    ) { paddingValues ->
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -150,18 +173,6 @@ fun HabitListScreen(
                 )
             }
         }
-    }
-
-    if (habitToDelete != null) {
-        AppDialog(
-            yesCallback = {
-                habitsViewModel.deleteHabit(habitToDelete ?: return@AppDialog)
-                habitToDelete = null
-            },
-            noCallback = { habitToDelete = null },
-            habitName = habitToDelete?.name ?: "",
-            modifier = Modifier.padding(horizontal = 32.dp)
-        )
     }
 }
 
