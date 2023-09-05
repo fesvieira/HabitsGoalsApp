@@ -8,6 +8,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -99,7 +100,6 @@ fun HabitListScreen(
             }
         }
     ) { paddingValues ->
-
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
@@ -107,71 +107,75 @@ fun HabitListScreen(
                 .padding(top = 16.dp)
         ) {
             if (list.isEmpty()) {
-                item {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.add_your_habits_to_start),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(top = 40.dp, start = 40.dp, end = 40.dp)
-                        )
+                emptyHabitUI(this)
+            } else {
+                items(
+                    items = list,
+                    key = { it.hashCode() },
+                ) { item ->
+                    val dismissState = rememberDismissState(
+                        confirmStateChange = { dismissValue ->
+                            if (dismissValue == DismissValue.DismissedToStart) {
+                                habitToDelete = item
+                            }
+                            false
+                        }
+                    )
 
-                        val composition by rememberLottieComposition(
-                            spec = LottieCompositionSpec.RawRes(R.raw.rocket)
-                        )
-                        val logoAnimationState =
-                            animateLottieCompositionAsState(
-                                composition = composition,
-                                iterations = LottieConstants.IterateForever
+                    SwipeToDismiss(
+                        state = dismissState,
+                        modifier = Modifier
+                            .padding(vertical = 1.dp)
+                            .animateItemPlacement(),
+                        directions = setOf(DismissDirection.EndToStart),
+                        dismissThresholds = { FractionalThreshold(0.1f) },
+                        background = { SwipeToDismissDynamicBackground(dismissState) },
+                        dismissContent = {
+                            HabitCard(
+                                habit = item,
+                                onClickListener = {
+                                    habitsViewModel.selectedHabit = item
+                                    navController.navigate(EditHabit)
+                                },
+                                onAddClickListener = {
+                                    habitsViewModel.selectedHabit = item
+                                    habitsViewModel.addStrike()
+                                }
                             )
-
-                        LottieAnimation(
-                            composition = composition,
-                            progress = { logoAnimationState.progress },
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(top = 16.dp, start = 32.dp, end = 32.dp)
-                                .size(250.dp)
-                        )
-                    }
+                        }
+                    )
                 }
             }
+        }
+    }
+}
 
-            items(
-                items = list,
-                key = { it.hashCode() },
-            ) { item ->
-                val dismissState = rememberDismissState(
-                    confirmStateChange = { dismissValue ->
-                        if (dismissValue == DismissValue.DismissedToStart) {
-                            habitToDelete = item
-                        }
-                        false
-                    }
+private fun emptyHabitUI(lazyListScope: LazyListScope) {
+    lazyListScope.item {
+        Column {
+            Text(
+                text = stringResource(R.string.add_your_habits_to_start),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 40.dp, start = 40.dp, end = 40.dp)
+            )
+
+            val composition by rememberLottieComposition(
+                spec = LottieCompositionSpec.RawRes(R.raw.rocket)
+            )
+            val logoAnimationState =
+                animateLottieCompositionAsState(
+                    composition = composition,
+                    iterations = LottieConstants.IterateForever
                 )
 
-                SwipeToDismiss(
-                    state = dismissState,
-                    modifier = Modifier
-                        .padding(vertical = 1.dp)
-                        .animateItemPlacement(),
-                    directions = setOf(DismissDirection.EndToStart),
-                    dismissThresholds = { FractionalThreshold(0.1f) },
-                    background = { SwipeToDismissDynamicBackground(dismissState) },
-                    dismissContent = {
-                        HabitCard(
-                            habit = item,
-                            onClickListener = {
-                                habitsViewModel.selectedHabit = item
-                                navController.navigate(EditHabit)
-                            },
-                            onAddClickListener = {
-                                habitsViewModel.selectedHabit = item
-                                habitsViewModel.addStrike()
-                            }
-                        )
-                    }
-                )
-            }
+            LottieAnimation(
+                composition = composition,
+                progress = { logoAnimationState.progress },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 16.dp, start = 32.dp, end = 32.dp)
+                    .size(250.dp)
+            )
         }
     }
 }
