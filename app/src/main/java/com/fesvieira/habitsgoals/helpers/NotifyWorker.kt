@@ -25,7 +25,7 @@ import com.fesvieira.habitsgoals.R
 class NotifyWorker(context: Context, params: WorkerParameters): Worker(context, params) {
 
     companion object {
-        const val NOTIFICATION_ID = "0"
+        const val NOTIFICATION_ID = "notification_id"
         const val NOTIFICATION_CHANNEL = "General"
         const val NOTIFICATION_NAME = "Habit Reminder"
         const val WORK_NAME = "Habit Reminder Work"

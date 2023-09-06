@@ -9,6 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy.REPLACE
 import androidx.work.OneTimeWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.fesvieira.habitsgoals.helpers.NotifyWorker
 import com.fesvieira.habitsgoals.helpers.NotifyWorker.Companion.NOTIFICATION_ID
@@ -37,16 +38,14 @@ class MainActivity : ComponentActivity() {
 }
 
 private fun scheduleNotification(context: Context, delay: Long, data: Data) {
-    val notificationWork = OneTimeWorkRequest
-        .Builder(NotifyWorker::class.java)
-        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-        .setInputData(data)
-        .build()
+    val request =
+        PeriodicWorkRequestBuilder<NotifyWorker>(15, TimeUnit.MINUTES)
+            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+            .setInputData(data)
+            .build()
 
     val instanceWorkManager = WorkManager.getInstance(context)
-    instanceWorkManager
-        .beginUniqueWork(WORK_NAME, REPLACE, notificationWork)
-        .enqueue()
+    instanceWorkManager.enqueue(request)
 }
 
 @Composable
