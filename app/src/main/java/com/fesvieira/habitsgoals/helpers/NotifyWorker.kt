@@ -22,22 +22,25 @@ import androidx.work.WorkerParameters
 import com.fesvieira.habitsgoals.MainActivity
 import com.fesvieira.habitsgoals.R
 
-class NotifyWorker(context: Context, params: WorkerParameters): Worker(context, params) {
+class NotifyWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
 
     companion object {
         const val NOTIFICATION_ID = "notification_id"
         const val NOTIFICATION_CHANNEL = "General"
         const val NOTIFICATION_NAME = "Habit Reminder"
         const val WORK_NAME = "Habit Reminder Work"
+        const val HABIT_NAME = "habit_name"
     }
+
     override fun doWork(): Result {
         val id = inputData.getLong(NOTIFICATION_ID, 0).toInt()
+        val habitName = inputData.getString(HABIT_NAME) ?: return Result.failure()
 
-        sendNotification(id)
+        sendNotification(id, habitName)
         return Result.success()
     }
 
-    private fun sendNotification(id: Int) {
+    private fun sendNotification(id: Int, habitName: String) {
         val intent = Intent(applicationContext, MainActivity::class.java)
         intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
         intent.putExtra(NOTIFICATION_ID, id)
@@ -48,11 +51,18 @@ class NotifyWorker(context: Context, params: WorkerParameters): Worker(context, 
         val pendingIntent =
             getActivity(applicationContext, 0, intent, 0, false)
 
+        val sortMessage = applicationContext.getString(
+            when ((0..1).random()) {
+                0 -> R.string.dont_forget
+                else -> R.string.keep_going
+            }, habitName
+        )
+
         val notification = NotificationCompat
             .Builder(applicationContext, NOTIFICATION_CHANNEL)
-            .setSmallIcon(R.drawable.ic_save)
+            .setSmallIcon(R.drawable.ic_checklist)
             .setContentTitle(NOTIFICATION_NAME)
-            .setContentText("testing notifications")
+            .setContentText(sortMessage)
             .setDefaults(DEFAULT_ALL)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
