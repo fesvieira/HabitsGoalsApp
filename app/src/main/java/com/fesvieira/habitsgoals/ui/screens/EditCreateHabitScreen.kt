@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.helpers.FakeDao
+import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.repository.HabitsRepositoryImpl
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.TopBar

@@ -19,4 +19,5 @@
     <string name="dont_forget">Don\'t forget your habit: %s!!!</string>
     <string name="keep_going">Keep going! Let\'s practice more of your habit: %s!!!</string>
     <string name="remind_me_about_this_habit">Remind me about this habit</string>
+    <string name="this_is_an_example_of_reminder_for">This is an example of reminder for: %s</string>
 </resources>

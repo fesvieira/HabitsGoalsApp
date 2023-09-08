@@ -6,12 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.fesvieira.habitsgoals.navigation.MainNavHost
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
+import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import com.fesvieira.habitsgoals.viewmodel.NotificationsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val notificationsViewModel: NotificationsViewModel by viewModels()
+    private val habitsViewModel: HabitsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,7 +21,8 @@ class MainActivity : ComponentActivity() {
             HabitsGoalsTheme {
                 MainNavHost {
                     notificationsViewModel.scheduleNotification(
-                        context = applicationContext
+                        context = applicationContext,
+                        habit = habitsViewModel.selectedHabit
                     )
                 }
             }
