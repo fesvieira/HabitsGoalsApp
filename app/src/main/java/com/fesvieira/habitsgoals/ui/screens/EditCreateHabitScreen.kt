@@ -78,8 +78,30 @@ fun EditCreateHabitScreen(
         if (allowed) {
             isReminderActive = true
             onSetReminder()
+            habitsViewModel.updateOrAddHabit(
+                selectedHabit.name,
+                selectedHabit.goal.toString(),
+                onError = {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.only_numbers_allowed),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            )
+
+            coroutineScope.launch {
+                keyboardController?.hide()
+                delay(200)
+                navController.popBackStack()
+            }
         } else {
-            //TODO
+            isReminderActive = false
+            Toast.makeText(
+                context,
+                context.getString(R.string.unable_to_set_a_reminder_without_notification_permission),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -87,7 +109,18 @@ fun EditCreateHabitScreen(
         topBar = { TopBar(title = stringResource(R.string.habit_factory)) },
         floatingActionButton = {
             AppFloatActionButton(icon = painterResource(R.drawable.ic_save)) {
-                habitsViewModel.updateOrAddHabit(selectedHabit.name, selectedHabit.goal.toString(),
+                if (isReminderActive) {
+                    if (context.isAllowedTo(POST_NOTIFICATIONS) || Build.VERSION.SDK_INT < 33) {
+                        onSetReminder()
+                    } else {
+                        permissionLauncher.launch(POST_NOTIFICATIONS)
+                        return@AppFloatActionButton
+                    }
+                }
+
+                habitsViewModel.updateOrAddHabit(
+                    selectedHabit.name,
+                    selectedHabit.goal.toString(),
                     onError = {
                         Toast.makeText(
                             context,
@@ -96,6 +129,7 @@ fun EditCreateHabitScreen(
                         ).show()
                     }
                 )
+
                 coroutineScope.launch {
                     keyboardController?.hide()
                     delay(200)
@@ -150,19 +184,7 @@ fun EditCreateHabitScreen(
                     Checkbox(
                         checked = isReminderActive,
                         onCheckedChange = {
-                            when {
-                                isReminderActive -> isReminderActive = false
-                                !isReminderActive && (context.isAllowedTo(POST_NOTIFICATIONS) || Build.VERSION.SDK_INT < 33) -> {
-                                    isReminderActive = true
-                                    onSetReminder()
-                                }
-
-                                else -> {
-                                    if (Build.VERSION.SDK_INT >= 33) {
-                                        permissionLauncher.launch(POST_NOTIFICATIONS)
-                                    }
-                                }
-                            }
+                            isReminderActive = true
                         }
                     )
                     Text(
