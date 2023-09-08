@@ -11,6 +11,7 @@ import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,7 +20,8 @@ class HabitsViewModel @Inject constructor(
     private val habitRepository: HabitRepository
 ) : ViewModel() {
     var habits by mutableStateOf(emptyList<Habit>())
-    var selectedHabit by mutableStateOf(emptyHabit)
+    private val _selectedHabit = MutableStateFlow(emptyHabit)
+    val selectedHabit get() = _selectedHabit
 
     fun getHabits() = viewModelScope.launch {
         habitRepository.getHabits().collect { habitsList ->
@@ -28,14 +30,14 @@ class HabitsViewModel @Inject constructor(
     }
 
     private fun updateHabit(newName: String, newGoal: Int) = viewModelScope.launch(Dispatchers.IO) {
-        selectedHabit = selectedHabit.copy(name = newName, goal = newGoal)
-        habitRepository.updateHabit(selectedHabit)
+        _selectedHabit.value = selectedHabit.value.copy(name = newName, goal = newGoal)
+        habitRepository.updateHabit(selectedHabit.value)
     }
 
     fun addStrike() = viewModelScope.launch(Dispatchers.IO) {
-        val newStrike = selectedHabit.strike + 1
-        selectedHabit = selectedHabit.copy(strike = newStrike)
-        habitRepository.updateHabit(selectedHabit)
+        val newStrike = selectedHabit.value.strike + 1
+        _selectedHabit.value = selectedHabit.value.copy(strike = newStrike)
+        habitRepository.updateHabit(selectedHabit.value)
     }
 
     fun deleteHabit(habit: Habit) = viewModelScope.launch(Dispatchers.IO) {
@@ -53,7 +55,7 @@ class HabitsViewModel @Inject constructor(
     ) = viewModelScope.launch {
         if (textName.isNotEmpty() && textGoal.isNotEmpty()) {
             if (TextUtils.isDigitsOnly(textGoal)) {
-                if (selectedHabit == emptyHabit) {
+                if (selectedHabit.value == emptyHabit) {
                     addHabit(Habit(0, textName, 0, textGoal.toInt()))
                 } else {
                     updateHabit(textName, textGoal.toInt())

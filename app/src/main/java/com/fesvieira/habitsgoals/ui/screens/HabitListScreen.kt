@@ -94,7 +94,7 @@ fun HabitListScreen(
         topBar = { TopBar(title = stringResource(R.string.habits_list)) },
         floatingActionButton = {
             AppFloatActionButton(icon = painterResource(R.drawable.ic_add)) {
-                habitsViewModel.selectedHabit = emptyHabit
+                habitsViewModel.selectedHabit.value = emptyHabit
                 navController.navigate(EditHabit)
             }
         },
@@ -143,11 +143,11 @@ fun HabitListScreen(
                             HabitCard(
                                 habit = item,
                                 onClickListener = {
-                                    habitsViewModel.selectedHabit = item
+                                    habitsViewModel.selectedHabit.value = item
                                     navController.navigate(EditHabit)
                                 },
                                 onAddClickListener = {
-                                    habitsViewModel.selectedHabit = item
+                                    habitsViewModel.selectedHabit.value = item
                                     habitsViewModel.addStrike()
                                 }
                             )

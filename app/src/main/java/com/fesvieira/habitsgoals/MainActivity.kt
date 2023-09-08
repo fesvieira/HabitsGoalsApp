@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
                 MainNavHost {
                     notificationsViewModel.scheduleNotification(
                         context = applicationContext,
-                        habit = habitsViewModel.selectedHabit
+                        habit = habitsViewModel.selectedHabit.value
                     )
                 }
             }

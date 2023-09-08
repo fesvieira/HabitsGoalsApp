@@ -9,11 +9,11 @@ data class Habit(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     @ColumnInfo(name = "name")
-    val name: String,
+    var name: String,
     @ColumnInfo(name = "strike")
     val strike: Int,
     @ColumnInfo(name = "goal")
-    val goal: Int,
+    var goal: Int,
 ) {
     companion object {
         val emptyHabit = Habit(0, "", 0, 0)
