@@ -1,7 +1,11 @@
 package com.fesvieira.habitsgoals.ui.screens
 
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.res.Configuration
+import android.os.Build
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,7 +38,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.helpers.FakeDao
-import com.fesvieira.habitsgoals.model.Habit
+import com.fesvieira.habitsgoals.helpers.isAllowedTo
 import com.fesvieira.habitsgoals.repository.HabitsRepositoryImpl
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.TopBar
@@ -63,6 +67,17 @@ fun EditCreateHabitScreen(
             if (selectedHabit.goal == 0) ""
             else selectedHabit.goal.toString()
         )
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { allowed ->
+        if (allowed) {
+            isReminderActive = true
+            onSetReminder()
+        } else {
+            //TODO
+        }
     }
 
     Scaffold(
@@ -123,8 +138,18 @@ fun EditCreateHabitScreen(
                 Checkbox(
                     checked = isReminderActive,
                     onCheckedChange = {
-                        isReminderActive = !isReminderActive
-                        onSetReminder()
+                        when {
+                            isReminderActive -> isReminderActive = false
+                            !isReminderActive && (context.isAllowedTo(POST_NOTIFICATIONS) || Build.VERSION.SDK_INT < 33) -> {
+                                isReminderActive = true
+                                onSetReminder()
+                            }
+                            else -> {
+                                if (Build.VERSION.SDK_INT >= 33) {
+                                    permissionLauncher.launch(POST_NOTIFICATIONS)
+                                }
+                            }
+                        }
                     }
                 )
                 Text(
