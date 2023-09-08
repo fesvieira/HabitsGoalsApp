@@ -9,7 +9,6 @@ import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.graphics.Color.RED
 import android.media.AudioAttributes
 import android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION
 import android.media.AudioAttributes.USAGE_NOTIFICATION_RINGTONE
@@ -36,11 +35,6 @@ class NotifyWorker(context: Context, params: WorkerParameters) : Worker(context,
         val id = inputData.getLong(NOTIFICATION_ID, 0).toInt()
         val habitName = inputData.getString(HABIT_NAME) ?: return Result.failure()
 
-        sendNotification(id, habitName)
-        return Result.success()
-    }
-
-    private fun sendNotification(id: Int, habitName: String) {
         val intent = Intent(applicationContext, MainActivity::class.java)
         intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
         intent.putExtra(NOTIFICATION_ID, id)
@@ -60,7 +54,7 @@ class NotifyWorker(context: Context, params: WorkerParameters) : Worker(context,
 
         val notification = NotificationCompat
             .Builder(applicationContext, NOTIFICATION_CHANNEL)
-            .setSmallIcon(R.drawable.ic_checklist)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(NOTIFICATION_NAME)
             .setContentText(sortMessage)
             .setDefaults(DEFAULT_ALL)
@@ -68,23 +62,23 @@ class NotifyWorker(context: Context, params: WorkerParameters) : Worker(context,
             .setAutoCancel(true)
 
         notification.priority = IMPORTANCE_HIGH
-
         notification.setChannelId(NOTIFICATION_CHANNEL)
 
         val ringtoneManager = getDefaultUri(TYPE_NOTIFICATION)
-        val audioAttributes = AudioAttributes.Builder().setUsage(USAGE_NOTIFICATION_RINGTONE)
-            .setContentType(CONTENT_TYPE_SONIFICATION).build()
+        val audioAttributes = AudioAttributes
+            .Builder()
+            .setUsage(USAGE_NOTIFICATION_RINGTONE)
+            .setContentType(CONTENT_TYPE_SONIFICATION)
+            .build()
 
         val channel =
             NotificationChannel(NOTIFICATION_CHANNEL, NOTIFICATION_CHANNEL, IMPORTANCE_HIGH)
 
-        channel.enableLights(true)
-        channel.lightColor = RED
-        channel.enableVibration(true)
-        channel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
         channel.setSound(ringtoneManager, audioAttributes)
         notificationManager.createNotificationChannel(channel)
 
         notificationManager.notify(id, notification.build())
+
+        return Result.success()
     }
 }
