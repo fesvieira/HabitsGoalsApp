@@ -16,7 +16,9 @@ import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
-fun MainNavHost() {
+fun MainNavHost(
+    onSetReminder: () -> Unit
+) {
     val navController = rememberNavController()
     val habitsViewModel = hiltViewModel<HabitsViewModel>()
 
@@ -47,7 +49,8 @@ fun MainNavHost() {
             }) {
             EditCreateHabitScreen(
                 navController = navController,
-                habitsViewModel = habitsViewModel
+                habitsViewModel = habitsViewModel,
+                onSetReminder
             )
         }
     }

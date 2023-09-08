@@ -1,11 +1,14 @@
 package com.fesvieira.habitsgoals.ui.screens
 
+import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Checkbox
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -24,12 +27,18 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.helpers.FakeDao
+import com.fesvieira.habitsgoals.repository.HabitsRepositoryImpl
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.TopBar
+import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
+import com.fesvieira.habitsgoals.ui.theme.Typography
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -38,12 +47,14 @@ import kotlinx.coroutines.launch
 @Composable
 fun EditCreateHabitScreen(
     navController: NavController,
-    habitsViewModel: HabitsViewModel
+    habitsViewModel: HabitsViewModel,
+    onSetReminder: () -> Unit
 ) {
     val selectedHabit = remember { habitsViewModel.selectedHabit }
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val coroutineScope = rememberCoroutineScope()
+    var isReminderActive by remember { mutableStateOf(false) }
 
     var textName by remember { mutableStateOf(selectedHabit.name) }
     var textGoal by remember {
@@ -103,6 +114,43 @@ fun EditCreateHabitScreen(
                 fontSize = 13.sp,
                 color = Color.Gray
             )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Checkbox(
+                    checked = isReminderActive,
+                    onCheckedChange = {
+                        isReminderActive = !isReminderActive
+                        onSetReminder()
+                    }
+                )
+                Text(
+                    text = stringResource(R.string.remind_me_about_this_habit),
+                    style = Typography.body2
+                )
+            }
+
         }
+    }
+}
+
+@Preview(
+    device = "spec:width=1080px,height=2340px,dpi=440",
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_UNDEFINED
+)
+@Composable
+fun PreviewEditHabitsScreen() {
+    HabitsGoalsTheme {
+        EditCreateHabitScreen(
+            navController = rememberNavController(),
+            habitsViewModel = HabitsViewModel(
+                habitRepository = HabitsRepositoryImpl(
+                    habitDao = FakeDao
+                )
+            ),
+            onSetReminder = {}
+        )
     }
 }

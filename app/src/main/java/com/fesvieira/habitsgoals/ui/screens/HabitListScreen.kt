@@ -1,5 +1,6 @@
 package com.fesvieira.habitsgoals.ui.screens
 
+import android.content.res.Configuration
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
@@ -30,17 +31,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.*
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.helpers.FakeDao
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
+import com.fesvieira.habitsgoals.repository.HabitsRepositoryImpl
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.DeleteHabitSnackbar
 import com.fesvieira.habitsgoals.ui.components.HabitCard
 import com.fesvieira.habitsgoals.ui.components.TopBar
+import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -213,6 +219,17 @@ private fun SwipeToDismissDynamicBackground(dismissState: DismissState) {
             contentDescription = stringResource(R.string.delete_icon),
             tint = Color.White,
             modifier = Modifier.scale(scale)
+        )
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
+@Composable
+fun PreviewHabitListScreen() {
+    HabitsGoalsTheme {
+        HabitListScreen(
+            navController = rememberNavController(),
+            habitsViewModel = HabitsViewModel(HabitsRepositoryImpl(FakeDao))
         )
     }
 }
