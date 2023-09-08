@@ -26,6 +26,9 @@ class NotificationsViewModel @Inject constructor(): ViewModel() {
         context: Context,
         habit: Habit
     ) {
+        val tag = "$NOTIFICATION_ID${habit.id}"
+        val instanceWorkManager = WorkManager.getInstance(context)
+
         val data = Data.Builder()
             .putInt(HABIT_ID, habit.id)
             .putString(HABIT_NAME, habit.name)
@@ -35,7 +38,7 @@ class NotificationsViewModel @Inject constructor(): ViewModel() {
             PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
                 .setInitialDelay(15, TimeUnit.MINUTES)
                 .setInputData(data)
-                .addTag("$NOTIFICATION_ID${habit.id}")
+                .addTag(tag)
                 .build()
 
         val dataFirst = Data.Builder()
@@ -44,16 +47,13 @@ class NotificationsViewModel @Inject constructor(): ViewModel() {
             .putBoolean(IS_FIRST, true)
             .build()
 
-
         val oneTimeWorkRequest = OneTimeWorkRequest
             .Builder(NotificationWorker::class.java)
             .setInputData(dataFirst)
             .build()
 
-        val instanceWorkManager = WorkManager.getInstance(context)
         instanceWorkManager.enqueue(oneTimeWorkRequest)
         instanceWorkManager.enqueue(periodicWorkRequest)
-
     }
 
     fun cancelReminder(context: Context, habitId: Int) {

@@ -14,6 +14,8 @@ data class Habit(
     val strike: Int,
     @ColumnInfo(name = "goal")
     var goal: Int,
+    @ColumnInfo(name = "reminder")
+    var reminder: Boolean = false,
 ) {
     companion object {
         val emptyHabit = Habit(0, "", 0, 0)

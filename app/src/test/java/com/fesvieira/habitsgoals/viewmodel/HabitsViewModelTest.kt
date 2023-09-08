@@ -55,7 +55,7 @@ class HabitsViewModelTest {
     @Test
     fun addHabit() {
         val newHabit = Habit(4,"aoba", 3,9)
-        viewModel.addHabit(newHabit)
+        viewModel.addHabit()
 
         assertThat(viewModel.habits).contains(newHabit)
         assertThat(viewModel.habits.size).isEqualTo(4)

@@ -12,19 +12,11 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val notificationsViewModel: NotificationsViewModel by viewModels()
-    private val habitsViewModel: HabitsViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             HabitsGoalsTheme {
-                MainNavHost {
-                    notificationsViewModel.scheduleNotification(
-                        context = applicationContext,
-                        habit = habitsViewModel.selectedHabit.value
-                    )
-                }
+                MainNavHost()
             }
         }
     }

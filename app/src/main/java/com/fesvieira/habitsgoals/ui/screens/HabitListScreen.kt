@@ -103,7 +103,7 @@ fun HabitListScreen(
                 snackbarHostState = snackBarHostState,
                 habitName = habitToDelete?.name ?: ""
             ) {
-                habitsViewModel.addHabit(habitToDelete ?: return@DeleteHabitSnackbar)
+                habitsViewModel.addHabit()
                 habitToDelete = null
             }
         }

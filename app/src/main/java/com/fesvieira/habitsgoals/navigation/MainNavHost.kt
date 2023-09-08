@@ -14,14 +14,14 @@ import com.fesvieira.habitsgoals.navigation.Routes.HabitList
 import com.fesvieira.habitsgoals.ui.screens.EditCreateHabitScreen
 import com.fesvieira.habitsgoals.ui.screens.HabitListScreen
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
+import com.fesvieira.habitsgoals.viewmodel.NotificationsViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
-fun MainNavHost(
-    onSetReminder: () -> Unit
-) {
+fun MainNavHost() {
     val navController = rememberNavController()
     val habitsViewModel = hiltViewModel<HabitsViewModel>()
+    val notificationsViewModel = hiltViewModel<NotificationsViewModel>()
 
     val systemUiController = rememberSystemUiController()
 
@@ -48,10 +48,11 @@ fun MainNavHost(
                     animationSpec = tween(300)
                 )
             }) {
+
             EditCreateHabitScreen(
                 navController = navController,
                 habitsViewModel = habitsViewModel,
-                onSetReminder
+                notificationsViewModel = notificationsViewModel
             )
         }
     }
