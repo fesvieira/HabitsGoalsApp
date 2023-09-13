@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,6 +43,7 @@ import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.ui.theme.Typography
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -62,7 +64,9 @@ fun EditCreateHabitScreen(
         habitsViewModel.saveHabit(
             context = context,
             onError = { error ->
-                Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                coroutineScope.launch(Dispatchers.Main) {
+                    Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                }
                 return@saveHabit
             },
             onSuccess = {
@@ -131,10 +135,14 @@ fun EditCreateHabitScreen(
             )
 
             Text(
-                modifier = Modifier.padding(top = 8.dp),
                 text = stringResource(R.string.how_many_days_do_you),
                 fontSize = 13.sp,
-                color = Color.Gray
+                color = Color.Gray,
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .clickable {
+                        habitsViewModel.updateSelectedHabit(reminder = !selectedHabit.reminder)
+                    }
             )
 
             AnimatedVisibility(visible = selectedHabit.name != "") {
