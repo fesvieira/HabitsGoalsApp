@@ -85,7 +85,7 @@ fun HabitCard(
 @Composable
 fun PreviewHabitCardAdapter() {
     HabitCard(
-        habit = Habit(0, "Meditate", 0, 0),
+        habit = Habit("Meditate", 0, 0),
         onClickListener = {},
         onAddClickListener = {},
     )

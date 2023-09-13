@@ -50,6 +50,7 @@ import com.fesvieira.habitsgoals.ui.components.HabitCard
 import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
+import com.fesvieira.habitsgoals.viewmodel.NotificationsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -57,6 +58,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HabitListScreen(
     habitsViewModel: HabitsViewModel,
+    notificationsViewModel: NotificationsViewModel,
     navController: NavController
 ) {
     val habitsList by habitsViewModel.habits.collectAsStateWithLifecycle()
@@ -102,6 +104,9 @@ fun HabitListScreen(
                 habitName = habitToDelete?.name ?: ""
             ) {
                 habitsViewModel.addHabit()
+                if (habitToDelete?.reminder == true) {
+                    notificationsViewModel.scheduleNotification(context, habitToDelete ?: return@DeleteHabitSnackbar)
+                }
                 habitToDelete = null
             }
         }

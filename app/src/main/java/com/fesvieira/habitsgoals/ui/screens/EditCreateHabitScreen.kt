@@ -19,7 +19,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -51,29 +54,43 @@ fun EditCreateHabitScreen(
     notificationsViewModel: NotificationsViewModel
 ) {
     val selectedHabit by habitsViewModel.selectedHabit.collectAsStateWithLifecycle()
-    val createOrUpdateHabitError by habitsViewModel.createOrUpdateHabitError.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val coroutineScope = rememberCoroutineScope()
+    var shouldSaveHabit by remember { mutableStateOf(false) }
+
+    LaunchedEffect(shouldSaveHabit) {
+        if (!shouldSaveHabit) return@LaunchedEffect
+        habitsViewModel.saveHabit(
+            onError = { error ->
+                Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                return@saveHabit
+            },
+            onSuccess = {
+                coroutineScope.launch {
+                    if (selectedHabit.reminder) {
+                        notificationsViewModel.scheduleNotification(context,
+                            habitsViewModel.getHabitByName(selectedHabit.name) ?: return@launch
+                        )
+                    } else {
+                        notificationsViewModel.cancelReminder(context, selectedHabit.id)
+                    }
+
+                    keyboardController?.hide()
+                    delay(200)
+                    navController.popBackStack()
+                }
+            }
+        )
+        shouldSaveHabit = false
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { allowed ->
         if (allowed) {
             habitsViewModel.updateSelectedHabit(reminder = true)
-            habitsViewModel.saveHabit()
-            val newSelectedHabit =
-                habitsViewModel.habits.value.firstOrNull { it.name == selectedHabit.name }
-                    ?: return@rememberLauncherForActivityResult
-            notificationsViewModel.scheduleNotification(context, newSelectedHabit)
-
-            if (createOrUpdateHabitError == null) {
-                coroutineScope.launch {
-                    keyboardController?.hide()
-                    delay(200)
-                    navController.popBackStack()
-                }
-            }
+            shouldSaveHabit = true
         } else {
             habitsViewModel.updateSelectedHabit(reminder = false)
             Toast.makeText(
@@ -84,45 +101,22 @@ fun EditCreateHabitScreen(
         }
     }
 
-    LaunchedEffect(createOrUpdateHabitError) {
-        if (createOrUpdateHabitError == null) return@LaunchedEffect
-        Toast.makeText(context, createOrUpdateHabitError, Toast.LENGTH_LONG).show()
-    }
-
     Scaffold(
         topBar = { TopBar(title = stringResource(R.string.habit_factory)) },
         floatingActionButton = {
             AppFloatActionButton(icon = painterResource(R.drawable.ic_save)) {
-
-                habitsViewModel.saveHabit()
                 if (selectedHabit.reminder) {
                     if (context.isAllowedTo(POST_NOTIFICATIONS) || Build.VERSION.SDK_INT < 33) {
-                        notificationsViewModel.scheduleNotification(
-                            context,
-                            habitsViewModel.getHabitByName(selectedHabit.name)
-                                ?: return@AppFloatActionButton
-                        )
+                        shouldSaveHabit = true
                     } else {
                         permissionLauncher.launch(POST_NOTIFICATIONS)
-                        return@AppFloatActionButton
                     }
                 } else {
-                    notificationsViewModel.cancelReminder(
-                        context,
-                        habitsViewModel.getHabitByName(selectedHabit.name)?.id ?: return@AppFloatActionButton
-                    )
-                }
-                if (createOrUpdateHabitError == null) {
-                    coroutineScope.launch {
-                        keyboardController?.hide()
-                        delay(200)
-                        navController.popBackStack()
-                    }
+                    shouldSaveHabit = true
                 }
             }
         }
     ) { paddingValues ->
-
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,

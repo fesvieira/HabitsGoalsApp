@@ -6,8 +6,6 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "HABIT_LIST")
 data class Habit(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int,
     @ColumnInfo(name = "name")
     var name: String,
     @ColumnInfo(name = "strike")
@@ -16,8 +14,10 @@ data class Habit(
     var goal: Int,
     @ColumnInfo(name = "reminder")
     var reminder: Boolean = false,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
 ) {
     companion object {
-        val emptyHabit = Habit(0, "", 0, 0)
+        val emptyHabit = Habit("", 0, 0)
     }
 }

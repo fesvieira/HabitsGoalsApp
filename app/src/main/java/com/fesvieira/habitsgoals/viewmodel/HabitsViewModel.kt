@@ -10,6 +10,7 @@ import com.fesvieira.habitsgoals.repository.HabitRepository
 import com.fesvieira.habitsgoals.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,13 +26,9 @@ class HabitsViewModel @Inject constructor(
     private val _selectedHabit = MutableStateFlow(emptyHabit)
     val selectedHabit get() = _selectedHabit
 
-    private val _createOrUpdateHabitError = MutableStateFlow<String?>(null)
-    val createOrUpdateHabitError get() = _createOrUpdateHabitError
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
             habitRepository.getHabits().collect { habitList ->
-                println(habitList)
                 _habits.value = habitList
             }
         }
@@ -59,40 +56,51 @@ class HabitsViewModel @Inject constructor(
         }
     }
 
-    fun saveHabit() {
+    fun saveHabit(
+        onError: (String) -> Unit,
+        onSuccess: () -> Unit
+    ) {
         viewModelScope.launch {
             val name = selectedHabit.value.name
             val goal = selectedHabit.value.goal
 
-            _createOrUpdateHabitError.value = when {
-                name.isEmpty() || name.isBlank() -> "Invalid name"
-                goal <= 0 -> "Invalid goal"
-                else -> null
-            }
+            when {
+                name.isEmpty() || name.isBlank() -> {
+                    onError("Invalid name")
+                    return@launch
+                }
 
-            if (_createOrUpdateHabitError.value != null) return@launch
+                goal <= 0 -> {
+                    onError("Invalid goal")
+                    return@launch
+                }
+            }
 
             if (habits.value.find { it.name == selectedHabit.value.name } != null) {
                 updateHabit()
             } else {
                 addHabit()
             }
+            delay(200)
+            onSuccess()
         }
     }
 
     fun updateSelectedHabit(name: String) {
-        selectedHabit.value = selectedHabit.value.copy(name = name)
+        _selectedHabit.value = selectedHabit.value.copy(name = name)
     }
 
     fun updateSelectedHabitGoal(goal: String) {
         if (goal.length > 4 || !goal.isDigitsOnly()) return
         val intGoal = goal.toIntOrNull() ?: return
-        selectedHabit.value = selectedHabit.value.copy(goal = intGoal)
+        _selectedHabit.value = selectedHabit.value.copy(goal = intGoal)
     }
 
     fun updateSelectedHabit(reminder: Boolean) {
-        selectedHabit.value = selectedHabit.value.copy(reminder = reminder)
+        _selectedHabit.value = selectedHabit.value.copy(reminder = reminder)
     }
 
-    fun getHabitByName(habitName: String) = habits.value.firstOrNull { it.name == habitName }
+    fun getHabitByName(name: String): Habit? {
+        return _habits.value.firstOrNull { it.name == _selectedHabit.value.name }
+    }
 }

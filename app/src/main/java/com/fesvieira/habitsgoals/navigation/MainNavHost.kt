@@ -30,7 +30,8 @@ fun MainNavHost() {
             systemUiController.setSystemBarsColor(MaterialTheme.colors.primary)
             HabitListScreen(
                 navController = navController,
-                habitsViewModel = habitsViewModel
+                habitsViewModel = habitsViewModel,
+                notificationsViewModel = notificationsViewModel
             )
         }
 

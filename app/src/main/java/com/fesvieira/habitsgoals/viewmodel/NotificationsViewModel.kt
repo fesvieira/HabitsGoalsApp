@@ -25,13 +25,11 @@ import javax.inject.Inject
 class NotificationsViewModel @Inject constructor(
     private val userPreferences: UserPreferencesRepository
 ): ViewModel() {
-
     private val _reminders = MutableStateFlow<Set<String>>(emptySet())
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             userPreferences.reminders.collect { newList ->
-                println(newList)
                 _reminders.value = newList
             }
         }
@@ -43,10 +41,10 @@ class NotificationsViewModel @Inject constructor(
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             val tag = "$NOTIFICATION_ID${habit.id}"
-            println(_reminders)
-            if (_reminders.value.contains(tag)) return@launch
+            if (habit.id == 0 || _reminders.value.contains(tag)) return@launch
 
             val instanceWorkManager = WorkManager.getInstance(context)
+
 
             val data = Data.Builder()
                 .putString(HABIT_NAME, habit.name)
@@ -79,6 +77,7 @@ class NotificationsViewModel @Inject constructor(
     fun cancelReminder(context: Context, habitId: Int) {
         viewModelScope.launch {
             val tag = "$NOTIFICATION_ID${habitId}"
+            if (_reminders.value.firstOrNull { it == tag } == null) return@launch
             WorkManager.getInstance(context).cancelAllWorkByTag(tag)
             userPreferences.removeReminder(tag)
         }
