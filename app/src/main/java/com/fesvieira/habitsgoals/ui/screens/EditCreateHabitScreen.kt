@@ -61,8 +61,9 @@ fun EditCreateHabitScreen(
     ) { allowed ->
         if (allowed) {
             habitsViewModel.updateSelectedHabit(reminder = true)
-            notificationsViewModel.scheduleNotification(context, selectedHabit)
-            habitsViewModel.updateOrAddHabit(context)
+            habitsViewModel.saveHabit()
+            val newSelectedHabit = habitsViewModel.habits.value.firstOrNull { it.name == selectedHabit.name } ?: return@rememberLauncherForActivityResult
+            notificationsViewModel.scheduleNotification(context, newSelectedHabit)
 
             if (createOrUpdateHabitError == null) {
                 coroutineScope.launch {
@@ -90,16 +91,21 @@ fun EditCreateHabitScreen(
         topBar = { TopBar(title = stringResource(R.string.habit_factory)) },
         floatingActionButton = {
             AppFloatActionButton(icon = painterResource(R.drawable.ic_save)) {
+
+                habitsViewModel.saveHabit()
                 if (selectedHabit.reminder) {
                     if (context.isAllowedTo(POST_NOTIFICATIONS) || Build.VERSION.SDK_INT < 33) {
-                        notificationsViewModel.scheduleNotification(context, selectedHabit)
+                        notificationsViewModel.scheduleNotification(
+                            context,
+                            habitsViewModel.getHabitByName(selectedHabit.name) ?: return@AppFloatActionButton
+                        )
                     } else {
                         permissionLauncher.launch(POST_NOTIFICATIONS)
                         return@AppFloatActionButton
                     }
+                } else {
+                    notificationsViewModel.cancelReminder(context, habitsViewModel.getHabitByName(selectedHabit.name).id)
                 }
-
-                habitsViewModel.updateOrAddHabit(context)
                 if (createOrUpdateHabitError == null) {
                     coroutineScope.launch {
                         keyboardController?.hide()
@@ -107,7 +113,6 @@ fun EditCreateHabitScreen(
                         navController.popBackStack()
                     }
                 }
-
             }
         }
     ) { paddingValues ->
