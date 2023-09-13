@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.helpers.NotificationsService
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
@@ -43,7 +44,6 @@ import com.fesvieira.habitsgoals.ui.components.DeleteHabitSnackbar
 import com.fesvieira.habitsgoals.ui.components.HabitCard
 import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
-import com.fesvieira.habitsgoals.viewmodel.NotificationsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -51,7 +51,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun HabitListScreen(
     habitsViewModel: HabitsViewModel,
-    notificationsViewModel: NotificationsViewModel,
     navController: NavController
 ) {
     val habitsList by habitsViewModel.habits.collectAsStateWithLifecycle()
@@ -73,8 +72,7 @@ fun HabitListScreen(
 
     LaunchedEffect(habitToDelete) {
         habitToDelete?.let { habit ->
-            habitsViewModel.deleteHabit(habit)
-            notificationsViewModel.cancelReminder(context, habit.id)
+            habitsViewModel.deleteHabit(habit, context)
             val job = launch {
                 snackBarHostState.showSnackbar("", duration = SnackbarDuration.Indefinite)
             }
@@ -99,7 +97,10 @@ fun HabitListScreen(
             ) {
                 habitsViewModel.addHabit()
                 if (habitToDelete?.reminder == true) {
-                    notificationsViewModel.scheduleNotification(context, habitToDelete ?: return@DeleteHabitSnackbar)
+                    NotificationsService.scheduleNotification(
+                        context,
+                        habitToDelete ?: return@DeleteHabitSnackbar
+                    )
                 }
                 habitToDelete = null
             }

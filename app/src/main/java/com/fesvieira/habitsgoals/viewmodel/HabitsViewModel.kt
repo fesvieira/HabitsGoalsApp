@@ -1,13 +1,13 @@
 package com.fesvieira.habitsgoals.viewmodel
 
+import android.content.Context
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fesvieira.habitsgoals.helpers.NotificationWorker
+import com.fesvieira.habitsgoals.helpers.NotificationsService
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.repository.HabitRepository
-import com.fesvieira.habitsgoals.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -17,8 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HabitsViewModel @Inject constructor(
-    private val habitRepository: HabitRepository,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val habitRepository: HabitRepository
 ) : ViewModel() {
     private var _habits = MutableStateFlow<List<Habit>>(emptyList())
     val habits get() = _habits
@@ -44,10 +43,11 @@ class HabitsViewModel @Inject constructor(
         habitRepository.updateHabit(selectedHabit.value)
     }
 
-    fun deleteHabit(habit: Habit) = viewModelScope.launch(Dispatchers.IO) {
-        val tag = "${NotificationWorker.NOTIFICATION_ID}${habit.id}"
-        habitRepository.deleteHabit(habit)
-        userPreferencesRepository.removeReminder(tag)
+    fun deleteHabit(habit: Habit, context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            habitRepository.deleteHabit(habit)
+            NotificationsService.cancelReminder(context, habit.id)
+        }
     }
 
     fun addHabit() {
@@ -57,10 +57,11 @@ class HabitsViewModel @Inject constructor(
     }
 
     fun saveHabit(
+        context: Context,
         onError: (String) -> Unit,
         onSuccess: () -> Unit
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val name = selectedHabit.value.name
             val goal = selectedHabit.value.goal
 
@@ -81,7 +82,15 @@ class HabitsViewModel @Inject constructor(
             } else {
                 addHabit()
             }
+
             delay(200)
+            getHabitByName()?.let { habit ->
+                if (_selectedHabit.value.reminder) {
+                    NotificationsService.scheduleNotification(context, habit)
+                } else {
+                    NotificationsService.cancelReminder(context, habit.id)
+                }
+            }
             onSuccess()
         }
     }
@@ -100,7 +109,7 @@ class HabitsViewModel @Inject constructor(
         _selectedHabit.value = selectedHabit.value.copy(reminder = reminder)
     }
 
-    fun getHabitByName(name: String): Habit? {
+    private fun getHabitByName(): Habit? {
         return _habits.value.firstOrNull { it.name == _selectedHabit.value.name }
     }
 }

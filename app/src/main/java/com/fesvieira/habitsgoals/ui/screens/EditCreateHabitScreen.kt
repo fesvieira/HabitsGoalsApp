@@ -42,7 +42,6 @@ import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.ui.theme.Typography
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
-import com.fesvieira.habitsgoals.viewmodel.NotificationsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -50,8 +49,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun EditCreateHabitScreen(
     navController: NavController,
-    habitsViewModel: HabitsViewModel,
-    notificationsViewModel: NotificationsViewModel
+    habitsViewModel: HabitsViewModel
 ) {
     val selectedHabit by habitsViewModel.selectedHabit.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -62,20 +60,13 @@ fun EditCreateHabitScreen(
     LaunchedEffect(shouldSaveHabit) {
         if (!shouldSaveHabit) return@LaunchedEffect
         habitsViewModel.saveHabit(
+            context = context,
             onError = { error ->
                 Toast.makeText(context, error, Toast.LENGTH_LONG).show()
                 return@saveHabit
             },
             onSuccess = {
                 coroutineScope.launch {
-                    if (selectedHabit.reminder) {
-                        notificationsViewModel.scheduleNotification(context,
-                            habitsViewModel.getHabitByName(selectedHabit.name) ?: return@launch
-                        )
-                    } else {
-                        notificationsViewModel.cancelReminder(context, selectedHabit.id)
-                    }
-
                     keyboardController?.hide()
                     delay(200)
                     navController.popBackStack()

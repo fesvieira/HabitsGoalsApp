@@ -8,20 +8,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
 import com.fesvieira.habitsgoals.navigation.Routes.HabitList
 import com.fesvieira.habitsgoals.ui.screens.EditCreateHabitScreen
 import com.fesvieira.habitsgoals.ui.screens.HabitListScreen
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
-import com.fesvieira.habitsgoals.viewmodel.NotificationsViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun MainNavHost() {
     val navController = rememberNavController()
     val habitsViewModel = hiltViewModel<HabitsViewModel>()
-    val notificationsViewModel = hiltViewModel<NotificationsViewModel>()
 
     val systemUiController = rememberSystemUiController()
 
@@ -30,8 +27,7 @@ fun MainNavHost() {
             systemUiController.setSystemBarsColor(MaterialTheme.colors.primary)
             HabitListScreen(
                 navController = navController,
-                habitsViewModel = habitsViewModel,
-                notificationsViewModel = notificationsViewModel
+                habitsViewModel = habitsViewModel
             )
         }
 
@@ -52,8 +48,7 @@ fun MainNavHost() {
 
             EditCreateHabitScreen(
                 navController = navController,
-                habitsViewModel = habitsViewModel,
-                notificationsViewModel = notificationsViewModel
+                habitsViewModel = habitsViewModel
             )
         }
     }
