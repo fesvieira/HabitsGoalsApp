@@ -1,6 +1,5 @@
 package com.fesvieira.habitsgoals.ui.screens
 
-import android.content.res.Configuration
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
@@ -17,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,23 +30,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.*
 import com.fesvieira.habitsgoals.R
-import com.fesvieira.habitsgoals.helpers.FakeDao
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
-import com.fesvieira.habitsgoals.repository.HabitsRepositoryImpl
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.DeleteHabitSnackbar
 import com.fesvieira.habitsgoals.ui.components.HabitCard
 import com.fesvieira.habitsgoals.ui.components.TopBar
-import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import com.fesvieira.habitsgoals.viewmodel.NotificationsViewModel
 import kotlinx.coroutines.delay
@@ -79,8 +72,9 @@ fun HabitListScreen(
     }
 
     LaunchedEffect(habitToDelete) {
-        if (habitToDelete != null) {
-            habitsViewModel.deleteHabit(habitToDelete ?: return@LaunchedEffect)
+        habitToDelete?.let { habit ->
+            habitsViewModel.deleteHabit(habit)
+            notificationsViewModel.cancelReminder(context, habit.id)
             val job = launch {
                 snackBarHostState.showSnackbar("", duration = SnackbarDuration.Indefinite)
             }

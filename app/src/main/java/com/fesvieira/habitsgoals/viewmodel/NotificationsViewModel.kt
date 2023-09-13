@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo.State.ENQUEUED
 import androidx.work.WorkManager
 import com.fesvieira.habitsgoals.helpers.NotificationWorker
 import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.HABIT_ID
@@ -24,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(
     private val userPreferences: UserPreferencesRepository
-): ViewModel() {
+) : ViewModel() {
     private val _reminders = MutableStateFlow<Set<String>>(emptySet())
 
     init {
@@ -41,10 +42,13 @@ class NotificationsViewModel @Inject constructor(
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             val tag = "$NOTIFICATION_ID${habit.id}"
-            if (habit.id == 0 || _reminders.value.contains(tag)) return@launch
-
             val instanceWorkManager = WorkManager.getInstance(context)
+            val isEnqueued = instanceWorkManager
+                .getWorkInfosByTag(tag)
+                .get()
+                .indexOfFirst { it.state == ENQUEUED } != -1
 
+            if (habit.id == 0 || isEnqueued) return@launch
 
             val data = Data.Builder()
                 .putString(HABIT_NAME, habit.name)
@@ -75,10 +79,10 @@ class NotificationsViewModel @Inject constructor(
     }
 
     fun cancelReminder(context: Context, habitId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val tag = "$NOTIFICATION_ID${habitId}"
-            if (_reminders.value.firstOrNull { it == tag } == null) return@launch
-            WorkManager.getInstance(context).cancelAllWorkByTag(tag)
+            val instanceWorkManager = WorkManager.getInstance(context)
+            instanceWorkManager.cancelAllWorkByTag(tag)
             userPreferences.removeReminder(tag)
         }
     }
