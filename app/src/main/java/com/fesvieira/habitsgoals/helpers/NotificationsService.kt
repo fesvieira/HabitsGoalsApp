@@ -13,7 +13,6 @@ import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.NOTIFICATI
 import com.fesvieira.habitsgoals.model.Habit
 import java.util.concurrent.TimeUnit
 
-
 object NotificationsService {
     fun scheduleNotification(
         context: Context,

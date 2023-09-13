@@ -23,7 +23,9 @@ object AppModule {
         context,
         HabitDatabase::class.java,
         "HABIT_TABLE"
-    ).build()
+    )
+        .fallbackToDestructiveMigration()
+        .build()
 
     @Provides
     fun provideHabitDao(
