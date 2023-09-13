@@ -31,6 +31,7 @@ class NotificationsViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             userPreferences.reminders.collect { newList ->
+                println(newList)
                 _reminders.value = newList
             }
         }

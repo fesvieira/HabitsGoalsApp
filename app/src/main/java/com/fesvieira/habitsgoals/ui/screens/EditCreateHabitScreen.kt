@@ -62,7 +62,9 @@ fun EditCreateHabitScreen(
         if (allowed) {
             habitsViewModel.updateSelectedHabit(reminder = true)
             habitsViewModel.saveHabit()
-            val newSelectedHabit = habitsViewModel.habits.value.firstOrNull { it.name == selectedHabit.name } ?: return@rememberLauncherForActivityResult
+            val newSelectedHabit =
+                habitsViewModel.habits.value.firstOrNull { it.name == selectedHabit.name }
+                    ?: return@rememberLauncherForActivityResult
             notificationsViewModel.scheduleNotification(context, newSelectedHabit)
 
             if (createOrUpdateHabitError == null) {
@@ -97,14 +99,18 @@ fun EditCreateHabitScreen(
                     if (context.isAllowedTo(POST_NOTIFICATIONS) || Build.VERSION.SDK_INT < 33) {
                         notificationsViewModel.scheduleNotification(
                             context,
-                            habitsViewModel.getHabitByName(selectedHabit.name) ?: return@AppFloatActionButton
+                            habitsViewModel.getHabitByName(selectedHabit.name)
+                                ?: return@AppFloatActionButton
                         )
                     } else {
                         permissionLauncher.launch(POST_NOTIFICATIONS)
                         return@AppFloatActionButton
                     }
                 } else {
-                    notificationsViewModel.cancelReminder(context, habitsViewModel.getHabitByName(selectedHabit.name).id)
+                    notificationsViewModel.cancelReminder(
+                        context,
+                        habitsViewModel.getHabitByName(selectedHabit.name)?.id ?: return@AppFloatActionButton
+                    )
                 }
                 if (createOrUpdateHabitError == null) {
                     coroutineScope.launch {

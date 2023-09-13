@@ -3,9 +3,11 @@ package com.fesvieira.habitsgoals.viewmodel
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fesvieira.habitsgoals.helpers.NotificationWorker
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.repository.HabitRepository
+import com.fesvieira.habitsgoals.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HabitsViewModel @Inject constructor(
-    private val habitRepository: HabitRepository
+    private val habitRepository: HabitRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
     private var _habits = MutableStateFlow<List<Habit>>(emptyList())
     val habits get() = _habits
@@ -28,6 +31,7 @@ class HabitsViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             habitRepository.getHabits().collect { habitList ->
+                println(habitList)
                 _habits.value = habitList
             }
         }
@@ -44,7 +48,9 @@ class HabitsViewModel @Inject constructor(
     }
 
     fun deleteHabit(habit: Habit) = viewModelScope.launch(Dispatchers.IO) {
+        val tag = "${NotificationWorker.NOTIFICATION_ID}${habit.id}"
         habitRepository.deleteHabit(habit)
+        userPreferencesRepository.removeReminder(tag)
     }
 
     fun addHabit() {
