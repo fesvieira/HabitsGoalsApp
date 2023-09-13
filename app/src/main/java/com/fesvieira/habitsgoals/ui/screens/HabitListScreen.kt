@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.*
@@ -57,7 +59,7 @@ fun HabitListScreen(
     habitsViewModel: HabitsViewModel,
     navController: NavController
 ) {
-    val habitsList = habitsViewModel.habits
+    val habitsList by habitsViewModel.habits.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var shouldLeaveOnBackPress by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -72,10 +74,6 @@ fun HabitListScreen(
         }
 
         Toast.makeText(context, context.getString(R.string.press_back), Toast.LENGTH_LONG).show()
-    }
-
-    LaunchedEffect(Unit) {
-        habitsViewModel.getHabits()
     }
 
     LaunchedEffect(habitToDelete) {

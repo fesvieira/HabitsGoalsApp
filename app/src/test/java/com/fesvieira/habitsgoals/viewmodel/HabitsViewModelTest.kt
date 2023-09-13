@@ -39,7 +39,6 @@ class HabitsViewModelTest {
         )
         repository = FakeHabitsRepository(habitsList)
         viewModel = HabitsViewModel(repository)
-        viewModel.getHabits()
     }
 
     @After
@@ -49,7 +48,7 @@ class HabitsViewModelTest {
 
     @Test
     fun getHabits() {
-        assertThat(viewModel.habits).isNotEmpty()
+        assertThat(viewModel.habits.value).isNotEmpty()
     }
 
     @Test
@@ -57,7 +56,7 @@ class HabitsViewModelTest {
         val newHabit = Habit(4,"aoba", 3,9)
         viewModel.addHabit()
 
-        assertThat(viewModel.habits).contains(newHabit)
-        assertThat(viewModel.habits.size).isEqualTo(4)
+        assertThat(viewModel.habits.value).contains(newHabit)
+        assertThat(viewModel.habits.value.size).isEqualTo(4)
     }
 }

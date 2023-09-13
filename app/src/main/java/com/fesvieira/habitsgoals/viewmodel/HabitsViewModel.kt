@@ -1,9 +1,5 @@
 package com.fesvieira.habitsgoals.viewmodel
 
-import android.content.Context
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,7 +16,8 @@ import javax.inject.Inject
 class HabitsViewModel @Inject constructor(
     private val habitRepository: HabitRepository
 ) : ViewModel() {
-    var habits by mutableStateOf(emptyList<Habit>())
+    private var _habits = MutableStateFlow<List<Habit>>(emptyList())
+    val habits get() = _habits
 
     private val _selectedHabit = MutableStateFlow(emptyHabit)
     val selectedHabit get() = _selectedHabit
@@ -28,9 +25,11 @@ class HabitsViewModel @Inject constructor(
     private val _createOrUpdateHabitError = MutableStateFlow<String?>(null)
     val createOrUpdateHabitError get() = _createOrUpdateHabitError
 
-    fun getHabits() = viewModelScope.launch {
-        habitRepository.getHabits().collect { habitsList ->
-            habits = habitsList
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            habitRepository.getHabits().collect { habitList ->
+                _habits.value = habitList
+            }
         }
     }
 
@@ -48,21 +47,26 @@ class HabitsViewModel @Inject constructor(
         habitRepository.deleteHabit(habit)
     }
 
-    fun addHabit() = viewModelScope.launch(Dispatchers.IO) {
-        habitRepository.addHabit(selectedHabit.value)
+    fun addHabit() {
+        viewModelScope.launch(Dispatchers.IO) {
+            habitRepository.addHabit(selectedHabit.value)
+        }
     }
 
-    fun updateOrAddHabit(context: Context) = viewModelScope.launch {
-        val name = selectedHabit.value.name
-        val goal = selectedHabit.value.goal
+    fun saveHabit() {
+        viewModelScope.launch {
+            val name = selectedHabit.value.name
+            val goal = selectedHabit.value.goal
 
-        _createOrUpdateHabitError.value = when {
-            name.isEmpty() || name.isBlank() -> "Invalid name"
-            goal <= 0 -> "Invalid goal"
-            else -> null
-        }
-        if (_createOrUpdateHabitError.value == null) {
-            if (habits.find { it.name == selectedHabit.value.name } != null) {
+            _createOrUpdateHabitError.value = when {
+                name.isEmpty() || name.isBlank() -> "Invalid name"
+                goal <= 0 -> "Invalid goal"
+                else -> null
+            }
+
+            if (_createOrUpdateHabitError.value != null) return@launch
+
+            if (habits.value.find { it.name == selectedHabit.value.name } != null) {
                 updateHabit()
             } else {
                 addHabit()
@@ -83,4 +87,6 @@ class HabitsViewModel @Inject constructor(
     fun updateSelectedHabit(reminder: Boolean) {
         selectedHabit.value = selectedHabit.value.copy(reminder = reminder)
     }
+
+    fun getHabitByName(habitName: String) = habits.value.firstOrNull { it.name == habitName }
 }
