@@ -2,10 +2,10 @@ package com.fesvieira.habitsgoals.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Snackbar
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,14 +26,14 @@ fun DeleteHabitSnackbar(
         Snackbar(
             modifier = Modifier
                 .padding(12.dp),
-            backgroundColor = md_theme_dark_primaryContainer,
+            containerColor = md_theme_dark_primaryContainer,
             contentColor = Color.White,
-            elevation = 20.dp,
             action = {
                 Text(
                     text = stringResource(R.string.undo),
-                    style = Typography.button,
+                    style = Typography.labelLarge,
                     fontSize = 14.sp,
+                    color = Color.White,
                     modifier = Modifier
                         .clickable {
                             it.dismiss()
@@ -44,7 +44,7 @@ fun DeleteHabitSnackbar(
         ) {
             Text(
                 text = stringResource(R.string.deleted_x, habitName),
-                style = Typography.body2
+                style = Typography.bodyMedium,
             )
         }
     }

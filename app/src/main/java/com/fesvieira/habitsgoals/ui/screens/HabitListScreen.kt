@@ -14,6 +14,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissState
+import androidx.compose.material3.DismissValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -47,7 +59,7 @@ import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HabitListScreen(
     habitsViewModel: HabitsViewModel,
@@ -120,13 +132,14 @@ fun HabitListScreen(
                     key = { it.hashCode() },
                 ) { item ->
                     val dismissState = rememberDismissState(
-                        confirmStateChange = { dismissValue ->
+                        confirmValueChange = { dismissValue ->
                             if (dismissValue == DismissValue.DismissedToStart) {
                                 habitToDelete = item
                             }
 
                             true
-                        }
+                        },
+                        positionalThreshold = { 0.3f }
                     )
 
                     SwipeToDismiss(
@@ -135,7 +148,6 @@ fun HabitListScreen(
                             .padding(vertical = 1.dp)
                             .animateItemPlacement(tween(300)),
                         directions = setOf(DismissDirection.EndToStart),
-                        dismissThresholds = { FractionalThreshold(0.3f) },
                         background = { SwipeToDismissDynamicBackground(dismissState) },
                         dismissContent = {
                             HabitCard(
@@ -187,16 +199,16 @@ private fun emptyHabitUI(lazyListScope: LazyListScope) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwipeToDismissDynamicBackground(dismissState: DismissState) {
     val isSwiping by remember(dismissState) {
-        derivedStateOf { dismissState.direction == -1f && dismissState.progress.fraction > 0.1f }
+        derivedStateOf { dismissState.dismissDirection == DismissDirection.EndToStart && dismissState.progress > 0.1f }
     }
     val color by animateColorAsState(
         when {
-            isSwiping -> MaterialTheme.colors.error
-            else -> MaterialTheme.colors.background
+            isSwiping -> MaterialTheme.colorScheme.error
+            else -> MaterialTheme.colorScheme.background
         }, label = "color"
     )
 

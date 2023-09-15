@@ -5,6 +5,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +25,7 @@ import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HabitCard(
     habit: Habit,
@@ -27,8 +34,9 @@ fun HabitCard(
 ) {
     HabitsGoalsTheme {
         Card(
-            elevation = 6.dp,
-            backgroundColor = MaterialTheme.colors.secondaryVariant,
+            elevation = CardDefaults.cardElevation(6.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+            ,
             modifier = Modifier
                 .wrapContentHeight()
                 .padding(horizontal = 16.dp)
@@ -49,7 +57,7 @@ fun HabitCard(
                 ) {
                     Text(
                         text = habit.name,
-                        color = MaterialTheme.colors.onSurface
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
@@ -59,7 +67,7 @@ fun HabitCard(
                             habit.goal.toString()
                         ),
                         fontSize = 12.sp,
-                        color = MaterialTheme.colors.onSurface
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -68,11 +76,11 @@ fun HabitCard(
                     Modifier
                         .padding(5.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colors.secondary),
+                        .background(MaterialTheme.colorScheme.secondary),
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_add),
-                        tint = MaterialTheme.colors.onPrimary,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         contentDescription = stringResource(R.string.add_icon),
                     )
                 }
