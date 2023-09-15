@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun EditCreateHabitScreen(
+fun HabitDetailsScreen(
     navController: NavController,
     habitsViewModel: HabitsViewModel
 ) {

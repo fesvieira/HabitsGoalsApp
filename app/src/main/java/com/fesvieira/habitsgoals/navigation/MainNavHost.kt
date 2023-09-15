@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
 import com.fesvieira.habitsgoals.navigation.Routes.HabitList
-import com.fesvieira.habitsgoals.ui.screens.EditCreateHabitScreen
+import com.fesvieira.habitsgoals.ui.screens.HabitDetailsScreen
 import com.fesvieira.habitsgoals.ui.screens.HabitListScreen
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -46,7 +46,7 @@ fun MainNavHost() {
                 )
             }) {
 
-            EditCreateHabitScreen(
+            HabitDetailsScreen(
                 navController = navController,
                 habitsViewModel = habitsViewModel
             )
