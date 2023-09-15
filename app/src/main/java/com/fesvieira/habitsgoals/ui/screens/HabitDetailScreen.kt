@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun EditCreateHabitScreen(
+fun HabitDetailScreen(
     navController: NavController,
     habitsViewModel: HabitsViewModel
 ) {
@@ -166,3 +166,42 @@ fun EditCreateHabitScreen(
         }
     }
 }
+
+//TODO FINISH TIME PICKER
+/*@OptIn(ExperimentalMaterial3Api::class)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
+@Composable
+fun PreviewTimerPicker() {
+    HabitsGoalsTheme {
+        val timePickerState = rememberTimePickerState()
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(md_theme_light_background),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TimePicker(
+                state = timePickerState,
+                layoutType = TimePickerLayoutType.Vertical,
+                colors = TimePickerColors(
+                    clockDialColor =                         MaterialTheme.colors.background ,
+                    selectorColor =                          MaterialTheme.colors.secondary ,
+                    containerColor =                         MaterialTheme.colors.background ,
+                    periodSelectorBorderColor =              MaterialTheme.colors.onPrimary ,
+                    clockDialSelectedContentColor =          MaterialTheme.colors.primary ,
+                    clockDialUnselectedContentColor =        MaterialTheme.colors.primary ,
+                    periodSelectorSelectedContainerColor =   MaterialTheme.colors.primary ,
+                    periodSelectorUnselectedContainerColor = MaterialTheme.colors.primary ,
+                    periodSelectorSelectedContentColor =     MaterialTheme.colors.primary ,
+                    periodSelectorUnselectedContentColor =   MaterialTheme.colors.primary ,
+                    timeSelectorSelectedContainerColor =     MaterialTheme.colors.primarySurface ,
+                    timeSelectorUnselectedContainerColor =   MaterialTheme.colors.secondaryVariant ,
+                    timeSelectorSelectedContentColor =       MaterialTheme.colors.primary ,
+                    timeSelectorUnselectedContentColor =     MaterialTheme.colors.primary ,
+                )
+            )
+        }
+    }
+}*/
