@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.helpers.NotificationsService
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
@@ -67,12 +68,12 @@ class HabitsViewModel @Inject constructor(
 
             when {
                 name.isEmpty() || name.isBlank() -> {
-                    onError("Invalid name")
+                    onError(context.getString(R.string.invalid_name))
                     return@launch
                 }
 
                 goal <= 0 -> {
-                    onError("Invalid goal")
+                    onError(context.getString(R.string.invalid_goal))
                     return@launch
                 }
             }
