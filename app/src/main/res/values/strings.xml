@@ -21,4 +21,6 @@
     <string name="remind_me_about_this_habit">Remind me about this habit</string>
     <string name="this_is_an_example_of_reminder_for">This is an example of reminder for: %s</string>
     <string name="unable_to_set_a_reminder_without_notification_permission">Unable to set a reminder without notification permission</string>
+    <string name="invalid_name">Invalid name</string>
+    <string name="invalid_goal">Invalid goal</string>
 </resources>

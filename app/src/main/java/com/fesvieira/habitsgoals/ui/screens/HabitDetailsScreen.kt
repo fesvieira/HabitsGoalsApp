@@ -5,7 +5,6 @@ import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +16,7 @@ import androidx.compose.material.Checkbox
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -47,7 +47,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HabitDetailsScreen(
     navController: NavController,
@@ -140,29 +140,65 @@ fun HabitDetailsScreen(
                 color = Color.Gray,
                 modifier = Modifier
                     .padding(top = 8.dp)
-                    .clickable {
-                        habitsViewModel.updateSelectedHabit(reminder = !selectedHabit.reminder)
-                    }
             )
 
-            AnimatedVisibility(visible = selectedHabit.name != "") {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 16.dp)
-                ) {
-                    Checkbox(
-                        checked = selectedHabit.reminder,
-                        onCheckedChange = {
-                            habitsViewModel.updateSelectedHabit(reminder = !selectedHabit.reminder)
-                        }
-                    )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Checkbox(
+                    checked = selectedHabit.reminder,
+                    onCheckedChange = {
+                        habitsViewModel.updateSelectedHabit(reminder = !selectedHabit.reminder)
+                    }
+                )
 
-                    Text(
-                        text = stringResource(R.string.remind_me_about_this_habit),
-                        style = Typography.body2
-                    )
-                }
+                Text(
+                    text = stringResource(R.string.remind_me_about_this_habit),
+                    style = Typography.body2,
+                    modifier = Modifier.clickable {
+                        habitsViewModel.updateSelectedHabit(reminder = !selectedHabit.reminder)
+                    }
+                )
             }
         }
     }
 }
+//TODO FINISH TIME PICKER
+/*@OptIn(ExperimentalMaterial3Api::class)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
+@Composable
+fun PreviewTimerPicker() {
+    HabitsGoalsTheme {
+        val timePickerState = rememberTimePickerState()
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(md_theme_light_background),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TimePicker(
+                state = timePickerState,
+                layoutType = TimePickerLayoutType.Vertical,
+                colors = TimePickerColors(
+                    clockDialColor =                         MaterialTheme.colors.background ,
+                    selectorColor =                          MaterialTheme.colors.secondary ,
+                    containerColor =                         MaterialTheme.colors.background ,
+                    periodSelectorBorderColor =              MaterialTheme.colors.onPrimary ,
+                    clockDialSelectedContentColor =          MaterialTheme.colors.primary ,
+                    clockDialUnselectedContentColor =        MaterialTheme.colors.primary ,
+                    periodSelectorSelectedContainerColor =   MaterialTheme.colors.primary ,
+                    periodSelectorUnselectedContainerColor = MaterialTheme.colors.primary ,
+                    periodSelectorSelectedContentColor =     MaterialTheme.colors.primary ,
+                    periodSelectorUnselectedContentColor =   MaterialTheme.colors.primary ,
+                    timeSelectorSelectedContainerColor =     MaterialTheme.colors.primarySurface ,
+                    timeSelectorUnselectedContainerColor =   MaterialTheme.colors.secondaryVariant ,
+                    timeSelectorSelectedContentColor =       MaterialTheme.colors.primary ,
+                    timeSelectorUnselectedContentColor =     MaterialTheme.colors.primary ,
+                )
+            )
+        }
+    }
+}*/
