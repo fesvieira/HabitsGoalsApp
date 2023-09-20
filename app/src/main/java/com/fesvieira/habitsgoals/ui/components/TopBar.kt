@@ -1,17 +1,14 @@
 package com.fesvieira.habitsgoals.ui.components
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 
@@ -23,7 +20,6 @@ fun TopBar(title: String) {
         title = {
             Text(
                 text = title,
-                modifier = Modifier.padding(start = 16.dp),
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.sp,
                 color = Color.White
