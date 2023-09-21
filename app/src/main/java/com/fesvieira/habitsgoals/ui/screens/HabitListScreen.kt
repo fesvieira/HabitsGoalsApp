@@ -108,7 +108,7 @@ fun HabitListScreen(
                 habitName = habitToDelete?.name ?: ""
             ) {
                 habitsViewModel.addHabit()
-                if (habitToDelete?.reminder == true) {
+                if (habitToDelete?.reminder != null) {
                     NotificationsService.scheduleNotification(
                         context,
                         habitToDelete ?: return@DeleteHabitSnackbar

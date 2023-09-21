@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.sql.Time
 import javax.inject.Inject
 
 @HiltViewModel
@@ -85,7 +86,7 @@ class HabitsViewModel @Inject constructor(
 
             delay(200)
             getHabitByName()?.let { habit ->
-                if (_selectedHabit.value.reminder) {
+                if (_selectedHabit.value.reminder != null) {
                     NotificationsService.scheduleNotification(context, habit)
                 } else {
                     NotificationsService.cancelReminder(context, habit.id)
@@ -105,7 +106,7 @@ class HabitsViewModel @Inject constructor(
         _selectedHabit.value = selectedHabit.value.copy(goal = intGoal)
     }
 
-    fun updateSelectedHabit(reminder: Boolean) {
+    fun updateSelectedHabit(reminder: Int?) {
         _selectedHabit.value = selectedHabit.value.copy(reminder = reminder)
     }
 

@@ -1,6 +1,7 @@
 package com.fesvieira.habitsgoals.helpers
 
 import android.content.Context
+import androidx.compose.runtime.currentRecomposeScope
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
@@ -11,7 +12,9 @@ import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.HABIT_NAME
 import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.IS_FIRST
 import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.NOTIFICATION_ID
 import com.fesvieira.habitsgoals.model.Habit
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.hours
 
 object NotificationsService {
     fun scheduleNotification(
@@ -31,9 +34,18 @@ object NotificationsService {
             .putString(HABIT_NAME, habit.name)
             .build()
 
+        val currentMinuteOfDay = (Calendar.HOUR_OF_DAY * 60) + Calendar.MINUTE
+
+        val reminder = habit.reminder ?: return
+
+        val delay = if (currentMinuteOfDay > reminder)
+            24 * 60 - currentMinuteOfDay + reminder
+        else
+            reminder - currentMinuteOfDay
+
         val periodicWorkRequest =
-            PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
-                .setInitialDelay(15, TimeUnit.MINUTES)
+            PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
+                .setInitialDelay(delay.toLong(), TimeUnit.MINUTES)
                 .setInputData(data)
                 .addTag(tag)
                 .build()

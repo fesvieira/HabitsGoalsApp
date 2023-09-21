@@ -11,8 +11,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -68,6 +71,7 @@ fun HabitDetailScreen(
     val coroutineScope = rememberCoroutineScope()
     var shouldSaveHabit by remember { mutableStateOf(false) }
     val timePickerState = rememberTimePickerState()
+    var showTimePicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(shouldSaveHabit) {
         if (!shouldSaveHabit) return@LaunchedEffect
@@ -94,10 +98,9 @@ fun HabitDetailScreen(
         ActivityResultContracts.RequestPermission()
     ) { allowed ->
         if (allowed) {
-            habitsViewModel.updateSelectedHabit(reminder = true)
             shouldSaveHabit = true
         } else {
-            habitsViewModel.updateSelectedHabit(reminder = false)
+            habitsViewModel.updateSelectedHabit(reminder = null)
             Toast.makeText(
                 context,
                 context.getString(R.string.unable_to_set_a_reminder_without_notification_permission),
@@ -110,7 +113,7 @@ fun HabitDetailScreen(
         topBar = { TopBar(title = stringResource(R.string.habit_factory)) },
         floatingActionButton = {
             AppFloatActionButton(icon = painterResource(R.drawable.ic_save)) {
-                if (selectedHabit.reminder) {
+                if (selectedHabit.reminder != null) {
                     if (context.isAllowedTo(POST_NOTIFICATIONS) || Build.VERSION.SDK_INT < 33) {
                         shouldSaveHabit = true
                     } else {
@@ -155,9 +158,6 @@ fun HabitDetailScreen(
                     color = Color.Gray,
                     modifier = Modifier
                         .padding(top = 8.dp)
-                        .clickable {
-                            habitsViewModel.updateSelectedHabit(reminder = !selectedHabit.reminder)
-                        }
                 )
             }
 
@@ -167,9 +167,9 @@ fun HabitDetailScreen(
                     modifier = Modifier.padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = selectedHabit.reminder,
+                        checked = selectedHabit.reminder != null,
                         onCheckedChange = {
-                            habitsViewModel.updateSelectedHabit(reminder = !selectedHabit.reminder)
+                            showTimePicker = true
                         }
                     )
 
@@ -181,8 +181,10 @@ fun HabitDetailScreen(
             }
         }
 
-        AnimatedVisibility(selectedHabit.reminder) {
-            Dialog(onDismissRequest = { habitsViewModel.updateSelectedHabit(false) }) {
+        AnimatedVisibility(showTimePicker) {
+            Dialog(onDismissRequest = {
+                showTimePicker = false
+            }) {
                 Column(
                     modifier = Modifier
                         .shadow(10.dp, shape = RoundedCornerShape(32.dp))
@@ -196,6 +198,40 @@ fun HabitDetailScreen(
                         state = timePickerState,
                         modifier = Modifier.padding(top = 16.dp)
                     )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.ok),
+                            style = Typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            modifier = Modifier
+                                .clickable {
+                                    showTimePicker = false
+                                    habitsViewModel.updateSelectedHabit(
+                                        reminder = timePickerState.hour * 60 + timePickerState.minute
+                                    )
+                                }
+                        )
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        Text(
+                            text = stringResource(R.string.cancel),
+                            style = Typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            modifier = Modifier
+                                .clickable {
+                                    showTimePicker = false
+                                    // close and leave as it is
+                                }
+                        )
+                    }
                 }
             }
         }
