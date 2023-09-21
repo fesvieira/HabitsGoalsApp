@@ -169,7 +169,11 @@ fun HabitDetailScreen(
                     Checkbox(
                         checked = selectedHabit.reminder != null,
                         onCheckedChange = {
-                            showTimePicker = true
+                            if (selectedHabit.reminder == null) {
+                                showTimePicker = true
+                            } else {
+                                habitsViewModel.updateSelectedHabit(null)
+                            }
                         }
                     )
 
@@ -218,7 +222,7 @@ fun HabitDetailScreen(
                                 .clickable {
                                     showTimePicker = false
                                     habitsViewModel.updateSelectedHabit(
-                                        reminder = timePickerState.hour * 60 + timePickerState.minute
+                                        reminder = timePickerState.hour * 60 + timePickerState.minute,
                                     )
                                 }
                         )

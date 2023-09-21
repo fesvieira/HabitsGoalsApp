@@ -63,9 +63,10 @@ object NotificationsService {
         instanceWorkManager.enqueue(periodicWorkRequest)
     }
 
-    fun cancelReminder(context: Context, habitName: String) {
+    fun cancelReminder(context: Context, habitName: String, onCancel: () -> Unit) {
         val tag = "$NOTIFICATION_ID${habitName}"
         val instanceWorkManager = WorkManager.getInstance(context)
         instanceWorkManager.cancelAllWorkByTag(tag)
+        onCancel()
     }
 }

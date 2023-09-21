@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.helpers.NotificationsService
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
@@ -11,6 +12,7 @@ import com.fesvieira.habitsgoals.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,6 +25,9 @@ class HabitsViewModel @Inject constructor(
 
     private val _selectedHabit = MutableStateFlow(emptyHabit)
     val selectedHabit get() = _selectedHabit
+
+    private val _notifyCanceledReminder = MutableStateFlow<String?>(null)
+    val notifyCancelledReminder: StateFlow<String?> get() = _notifyCanceledReminder
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -45,7 +50,7 @@ class HabitsViewModel @Inject constructor(
     fun deleteHabit(habit: Habit, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             habitRepository.deleteHabit(habit)
-            NotificationsService.cancelReminder(context, habit.name)
+            NotificationsService.cancelReminder(context, habit.name) {}
         }
     }
 
@@ -66,12 +71,12 @@ class HabitsViewModel @Inject constructor(
 
             when {
                 name.isEmpty() || name.isBlank() -> {
-                    onError("Invalid name")
+                    onError(context.getString(R.string.invalid_name))
                     return@launch
                 }
 
                 goal <= 0 -> {
-                    onError("Invalid goal")
+                    onError(context.getString(R.string.invalid_goal))
                     return@launch
                 }
             }
@@ -86,7 +91,9 @@ class HabitsViewModel @Inject constructor(
                 NotificationsService.scheduleNotification(context, _selectedHabit.value)
             }
             else {
-                NotificationsService.cancelReminder(context, _selectedHabit.value.name)
+                NotificationsService.cancelReminder(context, _selectedHabit.value.name) {
+                    setCancelledReminder(_selectedHabit.value.name)
+                }
             }
 
             onSuccess()
@@ -109,5 +116,9 @@ class HabitsViewModel @Inject constructor(
 
     private fun getHabitByName(): Habit? {
         return _habits.value.firstOrNull { it.name == _selectedHabit.value.name }
+    }
+
+    fun setCancelledReminder(value: String?) {
+        _notifyCanceledReminder.value = value
     }
 }
