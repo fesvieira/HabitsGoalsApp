@@ -32,7 +32,8 @@ object NotificationsService {
             .putString(HABIT_NAME, habit.name)
             .build()
 
-        val currentMinuteOfDay = (Calendar.HOUR_OF_DAY * 60) + Calendar.MINUTE
+        val calendar = Calendar.getInstance()
+        val currentMinuteOfDay = (calendar.get(Calendar.HOUR_OF_DAY) * 60) + calendar.get(Calendar.MINUTE)
 
         val reminder = habit.reminder ?: return
 
@@ -42,7 +43,7 @@ object NotificationsService {
             reminder - currentMinuteOfDay
 
         val periodicWorkRequest =
-            PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
+            PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
                 .setInitialDelay(delay.toLong(), TimeUnit.MINUTES)
                 .setInputData(data)
                 .addTag(tag)
