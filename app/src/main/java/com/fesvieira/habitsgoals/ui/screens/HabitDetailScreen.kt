@@ -175,7 +175,11 @@ fun HabitDetailScreen(
 
                     Text(
                         text = stringResource(R.string.remind_me_about_this_habit),
-                        style = Typography.bodyMedium
+                        style = Typography.bodyMedium,
+                        modifier = Modifier
+                            .clickable {
+                                showTimePicker = true
+                            }
                     )
                 }
             }
@@ -228,7 +232,6 @@ fun HabitDetailScreen(
                             modifier = Modifier
                                 .clickable {
                                     showTimePicker = false
-                                    // close and leave as it is
                                 }
                         )
                     }

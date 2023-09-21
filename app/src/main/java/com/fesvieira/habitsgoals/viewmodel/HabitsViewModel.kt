@@ -10,10 +10,8 @@ import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import java.sql.Time
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,7 +45,7 @@ class HabitsViewModel @Inject constructor(
     fun deleteHabit(habit: Habit, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             habitRepository.deleteHabit(habit)
-            NotificationsService.cancelReminder(context, habit.id)
+            NotificationsService.cancelReminder(context, habit.name)
         }
     }
 
@@ -78,20 +76,19 @@ class HabitsViewModel @Inject constructor(
                 }
             }
 
-            if (habits.value.find { it.name == selectedHabit.value.name } != null) {
+            if (getHabitByName() != null) {
                 updateHabit()
             } else {
                 addHabit()
             }
 
-            delay(200)
-            getHabitByName()?.let { habit ->
-                if (_selectedHabit.value.reminder != null) {
-                    NotificationsService.scheduleNotification(context, habit)
-                } else {
-                    NotificationsService.cancelReminder(context, habit.id)
-                }
+            if (_selectedHabit.value.reminder != null) {
+                NotificationsService.scheduleNotification(context, _selectedHabit.value)
             }
+            else {
+                NotificationsService.cancelReminder(context, _selectedHabit.value.name)
+            }
+
             onSuccess()
         }
     }

@@ -1,7 +1,6 @@
 package com.fesvieira.habitsgoals.helpers
 
 import android.content.Context
-import androidx.compose.runtime.currentRecomposeScope
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
@@ -14,21 +13,20 @@ import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.NOTIFICATI
 import com.fesvieira.habitsgoals.model.Habit
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
-import kotlin.time.Duration.Companion.hours
 
 object NotificationsService {
     fun scheduleNotification(
         context: Context,
         habit: Habit
     ) {
-        val tag = "$NOTIFICATION_ID${habit.id}"
+        val tag = "$NOTIFICATION_ID${habit.name}"
         val instanceWorkManager = WorkManager.getInstance(context)
         val isEnqueued = instanceWorkManager
             .getWorkInfosByTag(tag)
             .get()
             .indexOfFirst { it.state == ENQUEUED } != -1
 
-        if (habit.id == 0 || isEnqueued) return
+        if (isEnqueued) return
 
         val data = Data.Builder()
             .putString(HABIT_NAME, habit.name)
@@ -65,8 +63,8 @@ object NotificationsService {
         instanceWorkManager.enqueue(periodicWorkRequest)
     }
 
-    fun cancelReminder(context: Context, habitId: Int) {
-        val tag = "$NOTIFICATION_ID${habitId}"
+    fun cancelReminder(context: Context, habitName: String) {
+        val tag = "$NOTIFICATION_ID${habitName}"
         val instanceWorkManager = WorkManager.getInstance(context)
         instanceWorkManager.cancelAllWorkByTag(tag)
     }
