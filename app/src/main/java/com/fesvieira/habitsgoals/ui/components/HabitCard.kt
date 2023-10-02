@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.helpers.progress
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 
@@ -61,11 +62,7 @@ fun HabitCard(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = stringResource(
-                            R.string.current_strike,
-                            habit.strike.toString(),
-                            habit.goal.toString()
-                        ),
+                        text = habit.progress,
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
