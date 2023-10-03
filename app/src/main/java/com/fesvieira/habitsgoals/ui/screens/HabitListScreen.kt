@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,6 +49,7 @@ import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.helpers.NotificationsService
+import com.fesvieira.habitsgoals.helpers.toStamp
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
@@ -58,6 +60,7 @@ import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -65,13 +68,16 @@ fun HabitListScreen(
     habitsViewModel: HabitsViewModel,
     navController: NavController
 ) {
-    val habitsList by habitsViewModel.habits.collectAsStateWithLifecycle()
+    val habitsList = habitsViewModel.habits
     val canceledReminder by habitsViewModel.notifyCancelledReminder.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var shouldLeaveOnBackPress by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     var habitToDelete by remember { mutableStateOf<Habit?>(null) }
     val snackBarHostState = remember { SnackbarHostState() }
+    val days = remember {
+        (0..2).map { LocalDate.now().minusDays(it.toLong()) }
+    }
 
     BackHandler(!shouldLeaveOnBackPress) {
         coroutineScope.launch {
@@ -107,6 +113,10 @@ fun HabitListScreen(
         }
     }
 
+    LaunchedEffect(habitsList) {
+        println(habitsList)
+    }
+
     Scaffold(
         topBar = { TopBar(title = stringResource(R.string.habits_list)) },
         floatingActionButton = {
@@ -123,8 +133,7 @@ fun HabitListScreen(
                 habitsViewModel.addHabit()
                 if (habitToDelete?.reminder != null) {
                     NotificationsService.scheduleNotification(
-                        context,
-                        habitToDelete ?: return@DeleteHabitSnackbar
+                        context,habitToDelete ?: return@DeleteHabitSnackbar
                     )
                 }
                 habitToDelete = null
@@ -142,7 +151,7 @@ fun HabitListScreen(
             } else {
                 items(
                     items = habitsList,
-                    key = { it.hashCode() },
+                    key = { it.id },
                 ) { item ->
                     val dismissState = rememberDismissState(
                         confirmValueChange = { dismissValue ->
@@ -165,13 +174,14 @@ fun HabitListScreen(
                         dismissContent = {
                             HabitCard(
                                 habit = item,
+                                days = days,
                                 onClickListener = {
                                     habitsViewModel.selectedHabit.value = item
                                     navController.navigate(EditHabit)
                                 },
-                                onAddClickListener = {
+                                onToggleDay = { day ->
                                     habitsViewModel.selectedHabit.value = item
-                                    habitsViewModel.addStrike()
+                                    habitsViewModel.toggleDayDone(day.toStamp)
                                 }
                             )
                         }

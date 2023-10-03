@@ -2,6 +2,7 @@ package com.fesvieira.habitsgoals.di
 
 import android.content.Context
 import androidx.room.Room
+import com.fesvieira.habitsgoals.model.DateStampsConverter
 import com.fesvieira.habitsgoals.repository.HabitDao
 import com.fesvieira.habitsgoals.repository.HabitDatabase
 import com.fesvieira.habitsgoals.repository.HabitRepository
@@ -24,6 +25,7 @@ object AppModule {
         HabitDatabase::class.java,
         "HABIT_TABLE"
     )
+        .addTypeConverter(DateStampsConverter())
         .fallbackToDestructiveMigration()
         .build()
 

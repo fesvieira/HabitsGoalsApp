@@ -1,4 +1,4 @@
-package com.fesvieira.habitsgoals.helpers
+package com.fesvieira.habitsgoals.helpers.habit
 
 import com.fesvieira.habitsgoals.model.Habit
 import java.lang.Float.min

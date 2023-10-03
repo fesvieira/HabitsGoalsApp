@@ -1,6 +1,7 @@
 package com.fesvieira.habitsgoals.viewmodel
 
 import android.content.Context
+import androidx.compose.runtime.mutableStateListOf
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,8 +21,8 @@ import javax.inject.Inject
 class HabitsViewModel @Inject constructor(
     private val habitRepository: HabitRepository
 ) : ViewModel() {
-    private var _habits = MutableStateFlow<List<Habit>>(emptyList())
-    val habits get() = _habits
+    private var _habits = mutableStateListOf<Habit>()
+    val habits: List<Habit> = _habits
 
     private val _selectedHabit = MutableStateFlow(emptyHabit)
     val selectedHabit get() = _selectedHabit
@@ -30,9 +31,11 @@ class HabitsViewModel @Inject constructor(
     val notifyCancelledReminder: StateFlow<String?> get() = _notifyCanceledReminder
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        _habits.clear()
+        viewModelScope.launch(Dispatchers.Main) {
             habitRepository.getHabits().collect { habitList ->
-                _habits.value = habitList
+                _habits.clear()
+                _habits.addAll(habitList)
             }
         }
     }
@@ -41,10 +44,17 @@ class HabitsViewModel @Inject constructor(
         habitRepository.updateHabit(selectedHabit.value)
     }
 
-    fun addStrike() = viewModelScope.launch(Dispatchers.IO) {
-        val newStrike = selectedHabit.value.strike + 1
-        _selectedHabit.value = selectedHabit.value.copy(strike = newStrike)
-        habitRepository.updateHabit(selectedHabit.value)
+    fun toggleDayDone(dayStamp: Long) = viewModelScope.launch(Dispatchers.IO) {
+        val newSelectedHabit = _selectedHabit.value
+        val daysDone = newSelectedHabit.daysDone.toMutableList()
+
+        if (daysDone.contains(dayStamp)) daysDone.remove(dayStamp)
+        else daysDone.add(dayStamp)
+
+
+        newSelectedHabit.daysDone = daysDone
+        _selectedHabit.value = newSelectedHabit
+        updateHabit()
     }
 
     fun deleteHabit(habit: Habit, context: Context) {
@@ -115,7 +125,7 @@ class HabitsViewModel @Inject constructor(
     }
 
     private fun getHabitByName(): Habit? {
-        return _habits.value.firstOrNull { it.name == _selectedHabit.value.name }
+        return _habits.firstOrNull { it.name == _selectedHabit.value.name }
     }
 
     fun setCancelledReminder(value: String?) {
