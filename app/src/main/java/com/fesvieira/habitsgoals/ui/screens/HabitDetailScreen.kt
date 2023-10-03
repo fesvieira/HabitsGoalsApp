@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
@@ -53,11 +52,13 @@ import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.helpers.isAllowedTo
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.TopBar
+import com.fesvieira.habitsgoals.ui.components.calendar.CalendarComponent
 import com.fesvieira.habitsgoals.ui.theme.Typography
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -72,6 +73,7 @@ fun HabitDetailScreen(
     var shouldSaveHabit by remember { mutableStateOf(false) }
     val timePickerState = rememberTimePickerState()
     var showTimePicker by remember { mutableStateOf(false) }
+    val date by remember { mutableStateOf(LocalDate.now()) }
 
     LaunchedEffect(shouldSaveHabit) {
         if (!shouldSaveHabit) return@LaunchedEffect
@@ -125,68 +127,65 @@ fun HabitDetailScreen(
             }
         }
     ) { paddingValues ->
-        LazyColumn(
+        Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            item {
-                OutlinedTextField(
-                    modifier = Modifier.padding(top = 16.dp),
-                    value = selectedHabit.name,
-                    onValueChange = { habitsViewModel.updateSelectedHabit(name = it) },
-                    label = { Text(stringResource(R.string.habit_name)) }
-                )
-            }
+            OutlinedTextField(
+                modifier = Modifier.padding(top = 16.dp),
+                value = selectedHabit.name,
+                onValueChange = { habitsViewModel.updateSelectedHabit(name = it) },
+                label = { Text(stringResource(R.string.habit_name)) }
+            )
 
-            item {
-                OutlinedTextField(
-                    modifier = Modifier.padding(top = 16.dp),
-                    value = if (selectedHabit.goal == 0) "" else selectedHabit.goal.toString(),
-                    onValueChange = { habitsViewModel.updateSelectedHabitGoal(goal = it) },
-                    label = { Text(stringResource(R.string.goal)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-            }
+            OutlinedTextField(
+                modifier = Modifier.padding(top = 16.dp),
+                value = if (selectedHabit.goal == 0) "" else selectedHabit.goal.toString(),
+                onValueChange = { habitsViewModel.updateSelectedHabitGoal(goal = it) },
+                label = { Text(stringResource(R.string.goal)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
 
-            item {
-                Text(
-                    text = stringResource(R.string.how_many_days_do_you),
-                    fontSize = 13.sp,
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                )
-            }
+            Text(
+                text = stringResource(R.string.how_many_days_do_you),
+                fontSize = 13.sp,
+                color = Color.Gray,
+                modifier = Modifier
+                    .padding(top = 8.dp)
+            )
 
-            item {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 16.dp)
-                ) {
-                    Checkbox(
-                        checked = selectedHabit.reminder != null,
-                        onCheckedChange = {
-                            if (selectedHabit.reminder == null) {
-                                showTimePicker = true
-                            } else {
-                                habitsViewModel.updateSelectedHabit(null)
-                            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Checkbox(
+                    checked = selectedHabit.reminder != null,
+                    onCheckedChange = {
+                        if (selectedHabit.reminder == null) {
+                            showTimePicker = true
+                        } else {
+                            habitsViewModel.updateSelectedHabit(null)
                         }
-                    )
+                    }
+                )
 
-                    Text(
-                        text = stringResource(R.string.remind_me_about_this_habit),
-                        style = Typography.bodyMedium,
-                        modifier = Modifier
-                            .clickable {
-                                showTimePicker = true
-                            }
-                    )
-                }
+                Text(
+                    text = stringResource(R.string.remind_me_about_this_habit),
+                    style = Typography.bodyMedium,
+                    modifier = Modifier
+                        .clickable {
+                            showTimePicker = true
+                        }
+                )
             }
+
+            CalendarComponent(
+                date = date,
+                modifier = Modifier.padding(16.dp)
+            )
         }
 
         AnimatedVisibility(showTimePicker) {
