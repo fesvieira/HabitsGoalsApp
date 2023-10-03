@@ -183,7 +183,7 @@ fun HabitDetailScreen(
             }
 
             CalendarComponent(
-                date = date,
+                baseDate = date,
                 modifier = Modifier.padding(16.dp)
             )
         }
