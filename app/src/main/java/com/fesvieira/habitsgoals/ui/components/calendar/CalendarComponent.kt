@@ -1,10 +1,9 @@
 package com.fesvieira.habitsgoals.ui.components.calendar
 
-import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.GridCells.Fixed
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -31,20 +31,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fesvieira.habitsgoals.R
-import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
+import com.fesvieira.habitsgoals.helpers.toStamp
 import java.time.LocalDate
-import java.util.Locale
 
 @Composable
 fun CalendarComponent(
     baseDate: LocalDate,
+    daysDone: List<Long>,
+    onToggleDay: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var dateShift by remember {
@@ -91,11 +90,15 @@ fun CalendarComponent(
         item(span = { GridItemSpan(maxLineSpan) }) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState(), true)
+                    .padding(horizontal = 8.dp)
                     .padding(bottom = 16.dp)
             ) {
                 Text(
-                    text = "${date.month.name.lowercase().replaceFirstChar { it.uppercase() }}, ${date.year}",
+                    text = "${
+                        date.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
+                    }, ${date.year}",
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Bold,
                     fontSize = 30.sp,
@@ -108,18 +111,22 @@ fun CalendarComponent(
                     painter = painterResource(R.drawable.ic_arrow_back),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.size(30.dp).clickable {
-                        dateShift -= 1
-                    }
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable {
+                            dateShift -= 1
+                        }
                 )
 
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_forward),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.size(30.dp).clickable {
-                        dateShift += 1
-                    }
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable {
+                            dateShift += 1
+                        }
                 )
             }
 
@@ -145,14 +152,28 @@ fun CalendarComponent(
             CalendarDay(
                 day = it + 1,
                 isCurrentDay = it + 1 == currentDay && dateShift == 0,
-                isSelected = false
+                isSelected = daysDone.contains(
+                    LocalDate.of(
+                        date.year,
+                        date.month.value,
+                        it + 1
+                    ).toStamp
+                ),
+                modifier = Modifier.clickable {
+                    onToggleDay(LocalDate.of(date.year, date.month.value, it + 1).toStamp)
+                }
             )
         }
     }
 }
 
 @Composable
-private fun CalendarDay(day: Int, isCurrentDay: Boolean, isSelected: Boolean) {
+private fun CalendarDay(
+    day: Int,
+    isCurrentDay: Boolean,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier
+) {
 
     val backgroundColor by animateColorAsState(
         targetValue = when {
@@ -165,7 +186,7 @@ private fun CalendarDay(day: Int, isCurrentDay: Boolean, isSelected: Boolean) {
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
+        modifier = modifier
             .padding(vertical = 3.dp)
             .size(40.dp)
             .padding(vertical = 1.dp, horizontal = 6.dp)
@@ -178,16 +199,6 @@ private fun CalendarDay(day: Int, isCurrentDay: Boolean, isSelected: Boolean) {
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
-        )
-    }
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
-@Composable
-fun PreviewCalendarComponent() {
-    HabitsGoalsTheme {
-        CalendarComponent(
-            baseDate = LocalDate.of(2023, 3, 1)
         )
     }
 }

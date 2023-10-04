@@ -28,6 +28,7 @@ import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,7 +47,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.helpers.isAllowedTo
@@ -66,7 +66,7 @@ fun HabitDetailScreen(
     navController: NavController,
     habitsViewModel: HabitsViewModel
 ) {
-    val selectedHabit by habitsViewModel.selectedHabit.collectAsStateWithLifecycle()
+    val selectedHabit by habitsViewModel.selectedHabit.collectAsState()
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val coroutineScope = rememberCoroutineScope()
@@ -74,6 +74,7 @@ fun HabitDetailScreen(
     val timePickerState = rememberTimePickerState()
     var showTimePicker by remember { mutableStateOf(false) }
     val date by remember { mutableStateOf(LocalDate.now()) }
+    val selectedHabitDaysDone = habitsViewModel.selectedHabitDaysDone
 
     LaunchedEffect(shouldSaveHabit) {
         if (!shouldSaveHabit) return@LaunchedEffect
@@ -94,6 +95,10 @@ fun HabitDetailScreen(
             }
         )
         shouldSaveHabit = false
+    }
+
+    LaunchedEffect(Unit) {
+        habitsViewModel.refreshDoneDays()
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -184,6 +189,8 @@ fun HabitDetailScreen(
 
             CalendarComponent(
                 baseDate = date,
+                daysDone = selectedHabitDaysDone,
+                onToggleDay = { habitsViewModel.toggleDayDone(it) },
                 modifier = Modifier.padding(16.dp)
             )
         }
