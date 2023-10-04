@@ -2,6 +2,7 @@ package com.fesvieira.habitsgoals.viewmodel
 
 import android.content.Context
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,11 +28,15 @@ class HabitsViewModel @Inject constructor(
     private val _selectedHabit = MutableStateFlow(emptyHabit)
     val selectedHabit get() = _selectedHabit
 
+    private val _selectedHabitDaysDone = SnapshotStateList<Long>()
+    var selectedHabitDaysDone: List<Long> = _selectedHabitDaysDone
+
     private val _notifyCanceledReminder = MutableStateFlow<String?>(null)
     val notifyCancelledReminder: StateFlow<String?> get() = _notifyCanceledReminder
 
     init {
         _habits.clear()
+        _selectedHabitDaysDone.clear()
         viewModelScope.launch(Dispatchers.Main) {
             habitRepository.getHabits().collect { habitList ->
                 _habits.clear()
@@ -44,16 +49,19 @@ class HabitsViewModel @Inject constructor(
         habitRepository.updateHabit(selectedHabit.value)
     }
 
-    fun toggleDayDone(dayStamp: Long) = viewModelScope.launch(Dispatchers.IO) {
+    fun toggleDayDone(dayStamp: Long) = viewModelScope.launch(Dispatchers.Main) {
         val newSelectedHabit = _selectedHabit.value
         val daysDone = newSelectedHabit.daysDone.toMutableList()
 
         if (daysDone.contains(dayStamp)) daysDone.remove(dayStamp)
         else daysDone.add(dayStamp)
 
-
         newSelectedHabit.daysDone = daysDone
         _selectedHabit.value = newSelectedHabit
+
+        _selectedHabitDaysDone.clear()
+        _selectedHabitDaysDone.addAll(daysDone)
+
         updateHabit()
     }
 
@@ -99,8 +107,7 @@ class HabitsViewModel @Inject constructor(
 
             if (_selectedHabit.value.reminder != null) {
                 NotificationsService.scheduleNotification(context, _selectedHabit.value)
-            }
-            else {
+            } else {
                 NotificationsService.cancelReminder(context, _selectedHabit.value.name) {
                     setCancelledReminder(_selectedHabit.value.name)
                 }
@@ -130,5 +137,10 @@ class HabitsViewModel @Inject constructor(
 
     fun setCancelledReminder(value: String?) {
         _notifyCanceledReminder.value = value
+    }
+
+    fun refreshDoneDays() {
+        _selectedHabitDaysDone.clear()
+        _selectedHabitDaysDone.addAll(_selectedHabit.value.daysDone)
     }
 }
