@@ -6,17 +6,27 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -35,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.fesvieira.habitsgoals.R
@@ -47,7 +59,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HabitDetailScreen(
     navController: NavController,
@@ -58,6 +70,8 @@ fun HabitDetailScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val coroutineScope = rememberCoroutineScope()
     var shouldSaveHabit by remember { mutableStateOf(false) }
+    val timePickerState = rememberTimePickerState()
+    var showTimePicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(shouldSaveHabit) {
         if (!shouldSaveHabit) return@LaunchedEffect
@@ -84,10 +98,9 @@ fun HabitDetailScreen(
         ActivityResultContracts.RequestPermission()
     ) { allowed ->
         if (allowed) {
-            habitsViewModel.updateSelectedHabit(reminder = true)
             shouldSaveHabit = true
         } else {
-            habitsViewModel.updateSelectedHabit(reminder = false)
+            habitsViewModel.updateSelectedHabit(reminder = null)
             Toast.makeText(
                 context,
                 context.getString(R.string.unable_to_set_a_reminder_without_notification_permission),
@@ -100,7 +113,7 @@ fun HabitDetailScreen(
         topBar = { TopBar(title = stringResource(R.string.habit_factory)) },
         floatingActionButton = {
             AppFloatActionButton(icon = painterResource(R.drawable.ic_save)) {
-                if (selectedHabit.reminder) {
+                if (selectedHabit.reminder != null) {
                     if (context.isAllowedTo(POST_NOTIFICATIONS) || Build.VERSION.SDK_INT < 33) {
                         shouldSaveHabit = true
                     } else {
@@ -112,96 +125,122 @@ fun HabitDetailScreen(
             }
         }
     ) { paddingValues ->
-        Column(
+        LazyColumn(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            OutlinedTextField(
-                modifier = Modifier.padding(top = 16.dp),
-                value = selectedHabit.name,
-                onValueChange = { habitsViewModel.updateSelectedHabit(name = it) },
-                label = { Text(stringResource(R.string.habit_name)) }
-            )
+            item {
+                OutlinedTextField(
+                    modifier = Modifier.padding(top = 16.dp),
+                    value = selectedHabit.name,
+                    onValueChange = { habitsViewModel.updateSelectedHabit(name = it) },
+                    label = { Text(stringResource(R.string.habit_name)) }
+                )
+            }
 
-            OutlinedTextField(
-                modifier = Modifier.padding(top = 16.dp),
-                value = if (selectedHabit.goal == 0) "" else selectedHabit.goal.toString(),
-                onValueChange = { habitsViewModel.updateSelectedHabitGoal(goal = it) },
-                label = { Text(stringResource(R.string.goal)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
+            item {
+                OutlinedTextField(
+                    modifier = Modifier.padding(top = 16.dp),
+                    value = if (selectedHabit.goal == 0) "" else selectedHabit.goal.toString(),
+                    onValueChange = { habitsViewModel.updateSelectedHabitGoal(goal = it) },
+                    label = { Text(stringResource(R.string.goal)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+            }
 
-            Text(
-                text = stringResource(R.string.how_many_days_do_you),
-                fontSize = 13.sp,
-                color = Color.Gray,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .clickable {
-                        habitsViewModel.updateSelectedHabit(reminder = !selectedHabit.reminder)
-                    }
-            )
+            item {
+                Text(
+                    text = stringResource(R.string.how_many_days_do_you),
+                    fontSize = 13.sp,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                )
+            }
 
-            AnimatedVisibility(visible = selectedHabit.name != "") {
+            item {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = selectedHabit.reminder,
+                        checked = selectedHabit.reminder != null,
                         onCheckedChange = {
-                            habitsViewModel.updateSelectedHabit(reminder = !selectedHabit.reminder)
+                            if (selectedHabit.reminder == null) {
+                                showTimePicker = true
+                            } else {
+                                habitsViewModel.updateSelectedHabit(null)
+                            }
                         }
                     )
 
                     Text(
                         text = stringResource(R.string.remind_me_about_this_habit),
-                        style = Typography.bodyMedium
+                        style = Typography.bodyMedium,
+                        modifier = Modifier
+                            .clickable {
+                                showTimePicker = true
+                            }
                     )
+                }
+            }
+        }
+
+        AnimatedVisibility(showTimePicker) {
+            Dialog(onDismissRequest = {
+                showTimePicker = false
+            }) {
+                Column(
+                    modifier = Modifier
+                        .shadow(10.dp, shape = RoundedCornerShape(32.dp))
+                        .background(
+                            MaterialTheme.colorScheme.background,
+                            RoundedCornerShape(32.dp)
+                        )
+                        .padding(16.dp)
+                ) {
+                    TimePicker(
+                        state = timePickerState,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.ok),
+                            style = Typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            modifier = Modifier
+                                .clickable {
+                                    showTimePicker = false
+                                    habitsViewModel.updateSelectedHabit(
+                                        reminder = timePickerState.hour * 60 + timePickerState.minute,
+                                    )
+                                }
+                        )
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        Text(
+                            text = stringResource(R.string.cancel),
+                            style = Typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            modifier = Modifier
+                                .clickable {
+                                    showTimePicker = false
+                                }
+                        )
+                    }
                 }
             }
         }
     }
 }
-
-//TODO FINISH TIME PICKER
-/*@OptIn(ExperimentalMaterial3Api::class)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
-@Composable
-fun PreviewTimerPicker() {
-    HabitsGoalsTheme {
-        val timePickerState = rememberTimePickerState()
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(md_theme_light_background),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TimePicker(
-                state = timePickerState,
-                layoutType = TimePickerLayoutType.Vertical,
-                colors = TimePickerColors(
-                    clockDialColor =                         MaterialTheme.colors.background ,
-                    selectorColor =                          MaterialTheme.colors.secondary ,
-                    containerColor =                         MaterialTheme.colors.background ,
-                    periodSelectorBorderColor =              MaterialTheme.colors.onPrimary ,
-                    clockDialSelectedContentColor =          MaterialTheme.colors.primary ,
-                    clockDialUnselectedContentColor =        MaterialTheme.colors.primary ,
-                    periodSelectorSelectedContainerColor =   MaterialTheme.colors.primary ,
-                    periodSelectorUnselectedContainerColor = MaterialTheme.colors.primary ,
-                    periodSelectorSelectedContentColor =     MaterialTheme.colors.primary ,
-                    periodSelectorUnselectedContentColor =   MaterialTheme.colors.primary ,
-                    timeSelectorSelectedContainerColor =     MaterialTheme.colors.primarySurface ,
-                    timeSelectorUnselectedContainerColor =   MaterialTheme.colors.secondaryVariant ,
-                    timeSelectorSelectedContentColor =       MaterialTheme.colors.primary ,
-                    timeSelectorUnselectedContentColor =     MaterialTheme.colors.primary ,
-                )
-            )
-        }
-    }
-}*/

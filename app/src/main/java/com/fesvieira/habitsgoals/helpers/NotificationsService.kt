@@ -11,6 +11,7 @@ import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.HABIT_NAME
 import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.IS_FIRST
 import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.NOTIFICATION_ID
 import com.fesvieira.habitsgoals.model.Habit
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 object NotificationsService {
@@ -18,22 +19,32 @@ object NotificationsService {
         context: Context,
         habit: Habit
     ) {
-        val tag = "$NOTIFICATION_ID${habit.id}"
+        val tag = "$NOTIFICATION_ID${habit.name}"
         val instanceWorkManager = WorkManager.getInstance(context)
         val isEnqueued = instanceWorkManager
             .getWorkInfosByTag(tag)
             .get()
             .indexOfFirst { it.state == ENQUEUED } != -1
 
-        if (habit.id == 0 || isEnqueued) return
+        if (isEnqueued) return
 
         val data = Data.Builder()
             .putString(HABIT_NAME, habit.name)
             .build()
 
+        val calendar = Calendar.getInstance()
+        val currentMinuteOfDay = (calendar.get(Calendar.HOUR_OF_DAY) * 60) + calendar.get(Calendar.MINUTE)
+
+        val reminder = habit.reminder ?: return
+
+        val delay = if (currentMinuteOfDay > reminder)
+            24 * 60 - currentMinuteOfDay + reminder
+        else
+            reminder - currentMinuteOfDay
+
         val periodicWorkRequest =
             PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
-                .setInitialDelay(15, TimeUnit.MINUTES)
+                .setInitialDelay(delay.toLong(), TimeUnit.MINUTES)
                 .setInputData(data)
                 .addTag(tag)
                 .build()
@@ -53,9 +64,10 @@ object NotificationsService {
         instanceWorkManager.enqueue(periodicWorkRequest)
     }
 
-    fun cancelReminder(context: Context, habitId: Int) {
-        val tag = "$NOTIFICATION_ID${habitId}"
+    fun cancelReminder(context: Context, habitName: String, onCancel: () -> Unit) {
+        val tag = "$NOTIFICATION_ID${habitName}"
         val instanceWorkManager = WorkManager.getInstance(context)
         instanceWorkManager.cancelAllWorkByTag(tag)
+        onCancel()
     }
 }
