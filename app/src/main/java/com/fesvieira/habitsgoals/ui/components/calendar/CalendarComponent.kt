@@ -5,11 +5,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells.Fixed
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -33,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fesvieira.habitsgoals.R
@@ -83,6 +87,8 @@ fun CalendarComponent(
     LazyVerticalGrid(
         columns = Fixed(7),
         modifier = modifier
+            .height(if (monthLength == 31 && skipWeekDays > 4) 400.dp else 350.dp)
+            .widthIn(max = 400.dp)
             .clip(RoundedCornerShape(32.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .padding(16.dp)
@@ -200,5 +206,13 @@ private fun CalendarDay(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
         )
+    }
+}
+
+@Preview
+@Composable
+fun Preview() {
+    Column(modifier = Modifier.fillMaxSize()) {
+        CalendarComponent(baseDate = LocalDate.of(2023, 10, 5), daysDone = emptyList(), onToggleDay = {})
     }
 }

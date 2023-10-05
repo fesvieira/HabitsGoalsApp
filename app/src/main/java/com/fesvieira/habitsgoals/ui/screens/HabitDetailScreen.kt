@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
@@ -132,67 +133,78 @@ fun HabitDetailScreen(
             }
         }
     ) { paddingValues ->
-        Column(
+        LazyColumn(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            OutlinedTextField(
-                modifier = Modifier.padding(top = 16.dp),
-                value = selectedHabit.name,
-                onValueChange = { habitsViewModel.updateSelectedHabit(name = it) },
-                label = { Text(stringResource(R.string.habit_name)) }
-            )
-
-            OutlinedTextField(
-                modifier = Modifier.padding(top = 16.dp),
-                value = if (selectedHabit.goal == 0) "" else selectedHabit.goal.toString(),
-                onValueChange = { habitsViewModel.updateSelectedHabitGoal(goal = it) },
-                label = { Text(stringResource(R.string.goal)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
-            Text(
-                text = stringResource(R.string.how_many_days_do_you),
-                fontSize = 13.sp,
-                color = Color.Gray,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
-                Checkbox(
-                    checked = selectedHabit.reminder != null,
-                    onCheckedChange = {
-                        if (selectedHabit.reminder == null) {
-                            showTimePicker = true
-                        } else {
-                            habitsViewModel.updateSelectedHabit(null)
-                        }
-                    }
-                )
-
-                Text(
-                    text = stringResource(R.string.remind_me_about_this_habit),
-                    style = Typography.bodyMedium,
-                    modifier = Modifier
-                        .clickable {
-                            showTimePicker = true
-                        }
+            item {
+                OutlinedTextField(
+                    modifier = Modifier.padding(top = 16.dp),
+                    value = selectedHabit.name,
+                    onValueChange = { habitsViewModel.updateSelectedHabit(name = it) },
+                    label = { Text(stringResource(R.string.habit_name)) }
                 )
             }
 
-            CalendarComponent(
-                baseDate = date,
-                daysDone = selectedHabitDaysDone,
-                onToggleDay = { habitsViewModel.toggleDayDone(it) },
-                modifier = Modifier.padding(16.dp)
-            )
+            item {
+                OutlinedTextField(
+                    modifier = Modifier.padding(top = 16.dp),
+                    value = if (selectedHabit.goal == 0) "" else selectedHabit.goal.toString(),
+                    onValueChange = { habitsViewModel.updateSelectedHabitGoal(goal = it) },
+                    label = { Text(stringResource(R.string.goal)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+            }
+
+            item {
+                Text(
+                    text = stringResource(R.string.how_many_days_do_you),
+                    fontSize = 13.sp,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                )
+            }
+
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Checkbox(
+                        checked = selectedHabit.reminder != null,
+                        onCheckedChange = {
+                            if (selectedHabit.reminder == null) {
+                                showTimePicker = true
+                            } else {
+                                habitsViewModel.updateSelectedHabit(null)
+                            }
+                        }
+                    )
+
+                    Text(
+                        text = stringResource(R.string.remind_me_about_this_habit),
+                        style = Typography.bodyMedium,
+                        modifier = Modifier
+                            .clickable {
+                                showTimePicker = true
+                            }
+                    )
+                }
+            }
+
+            item {
+                CalendarComponent(
+                    baseDate = date,
+                    daysDone = selectedHabitDaysDone,
+                    onToggleDay = { habitsViewModel.toggleDayDone(it) },
+                    modifier = Modifier
+                        .padding(16.dp)
+                )
+            }
         }
 
         AnimatedVisibility(showTimePicker) {
