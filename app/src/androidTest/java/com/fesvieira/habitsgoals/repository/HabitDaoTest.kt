@@ -41,7 +41,7 @@ class HabitDaoTest {
         ).allowMainThreadQueries().build()
 
         dao = database.habitDao()
-        habitItem = Habit( "name1", 1, 1)
+        habitItem = Habit( "name1", emptyList(), 1)
         dao.addHabit(habitItem)
     }
 
