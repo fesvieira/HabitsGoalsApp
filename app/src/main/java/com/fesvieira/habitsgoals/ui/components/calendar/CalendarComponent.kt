@@ -46,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.helpers.noRippleClickable
 import com.fesvieira.habitsgoals.helpers.toStamp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -149,7 +150,7 @@ fun CalendarComponent(
                         .size(24.dp)
                         .scale(leftArrowScaleAnim)
                         .clip(CircleShape)
-                        .clickable {
+                        .noRippleClickable {
                             coroutineScope.launch {
                                 dateShift -= 1
                                 leftArrowScale = 1.4f
@@ -169,7 +170,7 @@ fun CalendarComponent(
                         .size(24.dp)
                         .scale(rightArrowScaleAnim)
                         .clip(CircleShape)
-                        .clickable {
+                        .noRippleClickable {
                             coroutineScope.launch {
                                 dateShift += 1
                                 rightArrowScale = 1.4f
