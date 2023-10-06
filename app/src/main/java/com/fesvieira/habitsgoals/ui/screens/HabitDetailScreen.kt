@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -38,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +53,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.helpers.isAllowedTo
+import com.fesvieira.habitsgoals.helpers.minutesToHours
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.ui.components.calendar.CalendarComponent
@@ -180,10 +183,23 @@ fun HabitDetailScreen(
             item {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 16.dp)
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(32.dp))
+                        .clickable {
+                            if (selectedHabit.reminder == null) {
+                                showTimePicker = true
+                            } else {
+                                habitsViewModel.updateSelectedHabit(null)
+                            }
+                        }
+                        .padding(start = 8.dp, end = 24.dp)
                 ) {
                     Checkbox(
                         checked = selectedHabit.reminder != null,
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colorScheme.tertiary
+                        ),
                         onCheckedChange = {
                             if (selectedHabit.reminder == null) {
                                 showTimePicker = true
@@ -194,12 +210,9 @@ fun HabitDetailScreen(
                     )
 
                     Text(
-                        text = stringResource(R.string.remind_me_about_this_habit),
-                        style = Typography.bodyMedium,
-                        modifier = Modifier
-                            .clickable {
-                                showTimePicker = true
-                            }
+                        text = if (selectedHabit.reminder == null) stringResource(R.string.remind_me_about_this_habit)
+                        else "Reminder for: ${selectedHabit.reminder?.minutesToHours}",
+                        style = Typography.bodyMedium
                     )
                 }
             }
