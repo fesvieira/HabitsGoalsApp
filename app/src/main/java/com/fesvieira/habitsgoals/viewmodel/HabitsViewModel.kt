@@ -13,6 +13,7 @@ import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,12 +32,7 @@ class HabitsViewModel @Inject constructor(
     private val _selectedHabitDaysDone = SnapshotStateList<Long>()
     var selectedHabitDaysDone: List<Long> = _selectedHabitDaysDone
 
-    private val _notifyCanceledReminder = MutableStateFlow<String?>(null)
-    val notifyCancelledReminder: StateFlow<String?> get() = _notifyCanceledReminder
-
     init {
-        _habits.clear()
-        _selectedHabitDaysDone.clear()
         viewModelScope.launch(Dispatchers.Main) {
             habitRepository.getHabits().collect { habitList ->
                 _habits.clear()
@@ -67,8 +63,8 @@ class HabitsViewModel @Inject constructor(
 
     fun deleteHabit(habit: Habit, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
+            NotificationsService.cancelReminder(context, habit.id)
             habitRepository.deleteHabit(habit)
-            NotificationsService.cancelReminder(context, habit.name) {}
         }
     }
 
@@ -105,11 +101,15 @@ class HabitsViewModel @Inject constructor(
                 addHabit()
             }
 
-            if (_selectedHabit.value.reminder != null) {
-                NotificationsService.scheduleNotification(context, _selectedHabit.value)
-            } else {
-                NotificationsService.cancelReminder(context, _selectedHabit.value.name) {
-                    setCancelledReminder(_selectedHabit.value.name)
+            this.launch {
+                delay(1000)
+
+                getHabitByName()?.let {
+                    if (it.reminder != null) {
+                        NotificationsService.scheduleNotification(context, it)
+                    } else {
+                        NotificationsService.cancelReminder(context, it.id)
+                    }
                 }
             }
 
@@ -131,12 +131,9 @@ class HabitsViewModel @Inject constructor(
         _selectedHabit.value = selectedHabit.value.copy(reminder = reminder)
     }
 
+    /** Fetch habit from database with Room given id */
     private fun getHabitByName(): Habit? {
         return _habits.firstOrNull { it.name == _selectedHabit.value.name }
-    }
-
-    fun setCancelledReminder(value: String?) {
-        _notifyCanceledReminder.value = value
     }
 
     fun refreshDoneDays() {

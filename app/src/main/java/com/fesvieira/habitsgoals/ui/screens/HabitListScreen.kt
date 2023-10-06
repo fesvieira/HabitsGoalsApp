@@ -68,7 +68,6 @@ fun HabitListScreen(
     navController: NavController
 ) {
     val habitsList = habitsViewModel.habits
-    val canceledReminder by habitsViewModel.notifyCancelledReminder.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var shouldLeaveOnBackPress by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -97,18 +96,6 @@ fun HabitListScreen(
             delay(5000)
             job.cancel()
             habitToDelete = null
-        }
-    }
-
-    LaunchedEffect(canceledReminder) {
-        canceledReminder?.let {
-            Toast.makeText(
-                context,
-                context.getString(R.string.cancelled_reminder, canceledReminder),
-                Toast.LENGTH_SHORT
-            ).show()
-
-            habitsViewModel.setCancelledReminder(null)
         }
     }
 
