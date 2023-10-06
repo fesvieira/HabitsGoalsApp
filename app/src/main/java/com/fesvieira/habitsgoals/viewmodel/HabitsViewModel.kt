@@ -15,7 +15,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -94,12 +93,9 @@ class HabitsViewModel @Inject constructor(
                     return@launch
                 }
             }
-
-            if (getHabitByName() != null) {
-                updateHabit()
-            } else {
-                addHabit()
-            }
+            println(getHabitById())
+            if (getHabitById() != null) updateHabit()
+            else addHabit()
 
             this.launch {
                 delay(1000)
@@ -134,6 +130,10 @@ class HabitsViewModel @Inject constructor(
     /** Fetch habit from database with Room given id */
     private fun getHabitByName(): Habit? {
         return _habits.firstOrNull { it.name == _selectedHabit.value.name }
+    }
+
+    private fun getHabitById(): Habit? {
+        return _habits.firstOrNull { it.id == _selectedHabit.value.id }
     }
 
     fun refreshDoneDays() {

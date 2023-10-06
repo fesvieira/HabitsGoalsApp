@@ -40,6 +40,7 @@ package com.fesvieira.habitsgoals.ui.screens
  import androidx.compose.ui.platform.LocalSoftwareKeyboardController
  import androidx.compose.ui.res.painterResource
  import androidx.compose.ui.res.stringResource
+ import androidx.compose.ui.text.input.KeyboardCapitalization
  import androidx.compose.ui.text.input.KeyboardType
  import androidx.compose.ui.unit.dp
  import androidx.compose.ui.unit.sp
@@ -144,6 +145,7 @@ fun HabitDetailScreen(
                     onValueChange = { habitsViewModel.updateSelectedHabit(name = it) },
                     label = { Text(stringResource(R.string.habit_name)) },
                     shape = RoundedCornerShape(16.dp),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
                     modifier = Modifier
                         .padding(top = 16.dp)
                         .fillMaxWidth()
@@ -233,7 +235,6 @@ fun HabitDetailScreen(
                 timePickerState,
                 onDismiss = {
                     showTimePicker = false
-
                 },
                 onOkayClick = {
                     showTimePicker = false

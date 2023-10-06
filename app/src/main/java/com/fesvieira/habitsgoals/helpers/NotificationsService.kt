@@ -3,13 +3,10 @@ package com.fesvieira.habitsgoals.helpers
 import android.content.Context
 import android.util.Log
 import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo.State.ENQUEUED
 import androidx.work.WorkManager
-import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.HABIT_ID
 import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.HABIT_NAME
-import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.IS_FIRST
 import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.NOTIFICATION_ID
 import com.fesvieira.habitsgoals.model.Habit
 import java.util.Calendar
@@ -27,7 +24,9 @@ object NotificationsService {
             .get()
             .indexOfFirst { it.state == ENQUEUED } != -1
 
-        if (isEnqueued) return
+        if (isEnqueued) {
+            cancelReminder(context, habit.id)
+        }
 
         val data = Data.Builder()
             .putString(HABIT_NAME, habit.name)
