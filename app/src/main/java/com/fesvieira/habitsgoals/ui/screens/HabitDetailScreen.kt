@@ -142,20 +142,28 @@ fun HabitDetailScreen(
         ) {
             item {
                 OutlinedTextField(
-                    modifier = Modifier.padding(top = 16.dp),
                     value = selectedHabit.name,
                     onValueChange = { habitsViewModel.updateSelectedHabit(name = it) },
-                    label = { Text(stringResource(R.string.habit_name)) }
+                    label = { Text(stringResource(R.string.habit_name)) },
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 )
             }
 
             item {
                 OutlinedTextField(
-                    modifier = Modifier.padding(top = 16.dp),
                     value = if (selectedHabit.goal == 0) "" else selectedHabit.goal.toString(),
                     onValueChange = { habitsViewModel.updateSelectedHabitGoal(goal = it) },
                     label = { Text(stringResource(R.string.goal)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 )
             }
 
