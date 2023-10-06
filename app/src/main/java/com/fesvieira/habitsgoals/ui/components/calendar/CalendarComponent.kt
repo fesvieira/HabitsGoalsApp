@@ -1,6 +1,7 @@
 package com.fesvieira.habitsgoals.ui.components.calendar
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,13 +30,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,6 +47,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.helpers.toStamp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 @Composable
@@ -53,6 +59,7 @@ fun CalendarComponent(
     onToggleDay: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val coroutineScope = rememberCoroutineScope()
     var dateShift by remember {
         mutableIntStateOf(0)
     }
@@ -66,8 +73,16 @@ fun CalendarComponent(
             }
         }
     }
-    val daysOfWeek by remember {
-        mutableStateOf(listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"))
+    val daysOfWeek = remember {
+        listOf(
+            DayOfWeek.SUNDAY.name,
+            DayOfWeek.MONDAY.name,
+            DayOfWeek.TUESDAY.name,
+            DayOfWeek.WEDNESDAY.name,
+            DayOfWeek.THURSDAY.name,
+            DayOfWeek.FRIDAY.name,
+            DayOfWeek.SATURDAY.name,
+        )
     }
 
     val currentDay by remember {
@@ -86,6 +101,16 @@ fun CalendarComponent(
             else weekDay
         }
     }
+    var rightArrowScale by remember { mutableFloatStateOf(1.0f) }
+    var leftArrowScale by remember { mutableFloatStateOf(1.0f) }
+    val rightArrowScaleAnim by animateFloatAsState(
+        targetValue = rightArrowScale,
+        label = "rightArrowScaleAnim"
+    )
+    val leftArrowScaleAnim by animateFloatAsState(
+        targetValue = leftArrowScale,
+        label = "leftArrowScaleAnim"
+    )
 
     LazyVerticalGrid(
         columns = Fixed(7),
@@ -122,8 +147,15 @@ fun CalendarComponent(
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(24.dp)
+                        .scale(leftArrowScaleAnim)
+                        .clip(CircleShape)
                         .clickable {
-                            dateShift -= 1
+                            coroutineScope.launch {
+                                dateShift -= 1
+                                leftArrowScale = 1.4f
+                                delay(200)
+                                leftArrowScale = 1.0f
+                            }
                         }
                 )
 
@@ -135,8 +167,15 @@ fun CalendarComponent(
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(24.dp)
+                        .scale(rightArrowScaleAnim)
+                        .clip(CircleShape)
                         .clickable {
-                            dateShift += 1
+                            coroutineScope.launch {
+                                dateShift += 1
+                                rightArrowScale = 1.4f
+                                delay(200)
+                                rightArrowScale = 1.0f
+                            }
                         }
                 )
             }
@@ -144,9 +183,9 @@ fun CalendarComponent(
         }
         items(daysOfWeek) { day ->
             Text(
-                text = day,
+                text = day.take(3),
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
@@ -231,6 +270,9 @@ private fun CalendarDay(
 @Composable
 fun Preview() {
     Column(modifier = Modifier.fillMaxSize()) {
-        CalendarComponent(baseDate = LocalDate.of(2023, 10, 5), daysDone = emptyList(), onToggleDay = {})
+        CalendarComponent(
+            baseDate = LocalDate.of(2023, 10, 5),
+            daysDone = emptyList(),
+            onToggleDay = {})
     }
 }
