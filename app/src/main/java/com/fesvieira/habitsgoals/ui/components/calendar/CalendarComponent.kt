@@ -1,7 +1,9 @@
 package com.fesvieira.habitsgoals.ui.components.calendar
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells.Fixed
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -124,6 +127,8 @@ fun CalendarComponent(
                         }
                 )
 
+                Spacer(modifier = Modifier.width(16.dp))
+
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_forward),
                     contentDescription = null,
@@ -165,7 +170,7 @@ fun CalendarComponent(
                         it + 1
                     ).toStamp
                 ),
-                modifier = Modifier.clickable {
+                onClick = {
                     onToggleDay(LocalDate.of(date.year, date.month.value, it + 1).toStamp)
                 }
             )
@@ -178,6 +183,7 @@ private fun CalendarDay(
     day: Int,
     isCurrentDay: Boolean,
     isSelected: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -187,6 +193,14 @@ private fun CalendarDay(
             isCurrentDay -> MaterialTheme.colorScheme.background
             else -> MaterialTheme.colorScheme.secondaryContainer
         },
+        animationSpec = tween(400),
+        label = "backgroundColor"
+    )
+
+    val borderColor by animateColorAsState(
+        targetValue = if (isCurrentDay && isCurrentDay) MaterialTheme.colorScheme.onBackground
+        else MaterialTheme.colorScheme.secondaryContainer,
+        animationSpec = tween(400),
         label = "backgroundColor"
     )
 
@@ -197,7 +211,11 @@ private fun CalendarDay(
             .size(40.dp)
             .padding(vertical = 1.dp, horizontal = 6.dp)
             .clip(CircleShape)
+            .border(1.dp, borderColor, CircleShape)
             .background(backgroundColor)
+            .clickable {
+                onClick()
+            }
 
     ) {
         Text(
