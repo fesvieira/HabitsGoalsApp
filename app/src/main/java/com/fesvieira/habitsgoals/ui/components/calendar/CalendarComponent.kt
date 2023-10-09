@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.helpers.noRippleClickable
 import com.fesvieira.habitsgoals.helpers.toStamp
+import com.fesvieira.habitsgoals.ui.theme.HabitsGoalsTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -182,6 +183,7 @@ fun CalendarComponent(
             }
 
         }
+
         items(daysOfWeek) { day ->
             Text(
                 text = day.take(3),
@@ -226,7 +228,6 @@ private fun CalendarDay(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     val backgroundColor by animateColorAsState(
         targetValue = when {
             isSelected -> MaterialTheme.colorScheme.inversePrimary
@@ -247,33 +248,50 @@ private fun CalendarDay(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .padding(vertical = 3.dp)
-            .size(40.dp)
-            .padding(vertical = 1.dp, horizontal = 6.dp)
+            .size(44.dp)
+
+    ) {
+        Box(contentAlignment = Alignment.Center,modifier = Modifier
             .clip(CircleShape)
             .border(1.dp, borderColor, CircleShape)
             .background(backgroundColor)
             .clickable {
                 onClick()
             }
-
-    ) {
-        Text(
-            text = day.toString(),
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+            .size(40.dp)
+        ){
+            Text(
+                text = day.toString(),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
     }
 }
 
-@Preview
+@Preview(device = "spec:width=880px,height=2340px,dpi=440")
 @Composable
 fun Preview() {
-    Column(modifier = Modifier.fillMaxSize()) {
+    val composable = @Composable {
         CalendarComponent(
             baseDate = LocalDate.of(2023, 10, 5),
-            daysDone = emptyList(),
+            daysDone = listOf(
+                LocalDate.of(2023, 10, 3).toStamp,
+                LocalDate.of(2023, 10, 4).toStamp,
+                LocalDate.of(2023, 10, 12).toStamp,
+                LocalDate.of(2023, 10, 15).toStamp,
+            ),
             onToggleDay = {})
+
+    }
+    Column(modifier = Modifier.fillMaxSize()) {
+        HabitsGoalsTheme {
+            composable()
+        }
+
+        HabitsGoalsTheme(useDarkTheme = true) {
+            composable()
+        }
     }
 }
