@@ -1,10 +1,15 @@
 package com.fesvieira.habitsgoals.helpers
 
-val Int.minutesToHours: String get() {
-    val hours = this / 60
-    val hoursString = if (hours <= 9) "0$hours" else "$hours"
-    val minutes = this % 60
-    val minutesString = if (minutes <= 9) "0$minutes" else "$minutes"
+import android.content.Context
+import android.text.format.DateFormat
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
-    return "$hoursString:$minutesString"
+
+fun Int.minutesToHours(context: Context): String {
+    return LocalTime.of(this / 60, this % 60).format(
+        DateTimeFormatter.ofPattern(
+            if (DateFormat.is24HourFormat(context)) "HH:mm" else "hh:mm a"
+        )
+    )
 }

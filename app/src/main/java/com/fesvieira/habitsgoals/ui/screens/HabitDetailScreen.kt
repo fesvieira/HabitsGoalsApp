@@ -208,7 +208,7 @@ fun HabitDetailScreen(
 
                     AnimatedContent(
                         targetState = if (selectedHabit.reminder == null) stringResource(R.string.remind_me_about_this_habit)
-                        else "Reminder for: ${selectedHabit.reminder?.minutesToHours}",
+                        else "Reminder for: ${selectedHabit.reminder?.minutesToHours(context)}",
                         label = "",
                     ) {
                         Text(
