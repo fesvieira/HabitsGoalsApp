@@ -9,7 +9,8 @@ import androidx.work.WorkManager
 import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.HABIT_NAME
 import com.fesvieira.habitsgoals.helpers.NotificationWorker.Companion.NOTIFICATION_ID
 import com.fesvieira.habitsgoals.model.Habit
-import java.util.Calendar
+import java.time.Duration
+import java.time.LocalTime
 import java.util.concurrent.TimeUnit
 
 object NotificationsService {
@@ -24,28 +25,22 @@ object NotificationsService {
             .get()
             .indexOfFirst { it.state == ENQUEUED } != -1
 
-        if (isEnqueued) {
-            cancelReminder(context, habit.id)
-        }
+        if (isEnqueued)  cancelReminder(context, habit.id)
 
         val data = Data.Builder()
             .putString(HABIT_NAME, habit.name)
             .build()
 
-        val calendar = Calendar.getInstance()
-        val currentMinuteOfDay =
-            (calendar.get(Calendar.HOUR_OF_DAY) * 60) + calendar.get(Calendar.MINUTE)
-
         val reminder = habit.reminder ?: return
+        val localTime = LocalTime.now()
+        val reminderTime = LocalTime.of(reminder / 60, reminder % 60)
 
-        val delay = if (currentMinuteOfDay > reminder)
-            24 * 60 - currentMinuteOfDay + reminder
-        else
-            reminder - currentMinuteOfDay
+        val duration = Duration.between(localTime, reminderTime)
+        val delay = if (duration.seconds > 0) { duration.seconds } else { 24 * 3600 + duration.seconds }
 
         val periodicWorkRequest =
             PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
-                .setInitialDelay(delay.toLong(), TimeUnit.MINUTES)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
                 .setInputData(data)
                 .addTag(tag)
                 .build()
@@ -53,7 +48,8 @@ object NotificationsService {
         instanceWorkManager.enqueue(periodicWorkRequest)
         Log.d(
             "NotificationsService",
-            "Enqueued: $tag, ${habit.name}, delay ${delay / 60}h${delay % 60}m"
+            "Enqueued: $tag, ${habit.name}, " +
+                    "delay ${delay / 3600}h${(delay % 3600) / 60}m${(delay % 3600) % 60}s"
         )
     }
 

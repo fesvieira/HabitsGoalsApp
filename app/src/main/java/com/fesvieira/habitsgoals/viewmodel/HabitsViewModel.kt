@@ -93,7 +93,7 @@ class HabitsViewModel @Inject constructor(
                     return@launch
                 }
             }
-            println(getHabitById())
+
             if (getHabitById() != null) updateHabit()
             else addHabit()
 
