@@ -26,7 +26,6 @@ object AppModule {
         "HABIT_TABLE"
     )
         .addTypeConverter(DateStampsConverter())
-        .fallbackToDestructiveMigration()
         .build()
 
     @Provides

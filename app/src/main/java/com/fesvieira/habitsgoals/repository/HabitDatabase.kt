@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.fesvieira.habitsgoals.model.DateStampsConverter
 import com.fesvieira.habitsgoals.model.Habit
 
-@Database(entities = [Habit::class], version = 3, exportSchema = false)
+@Database(entities = [Habit::class], version = 1, exportSchema = false)
 @TypeConverters(DateStampsConverter::class)
 abstract class HabitDatabase: RoomDatabase() {
     abstract fun habitDao(): HabitDao
