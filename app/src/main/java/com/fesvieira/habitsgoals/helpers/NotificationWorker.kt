@@ -14,7 +14,6 @@ import android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION
 import android.media.AudioAttributes.USAGE_NOTIFICATION_RINGTONE
 import android.media.RingtoneManager.TYPE_NOTIFICATION
 import android.media.RingtoneManager.getDefaultUri
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.PendingIntentCompat.getActivity
 import androidx.work.Worker
@@ -28,7 +27,6 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
         const val NOTIFICATION_ID = "reminder_for_habit_"
         const val NOTIFICATION_CHANNEL = "General"
         const val NOTIFICATION_NAME = "Habit Reminder"
-        const val WORK_NAME = "Habit Reminder Work"
         const val HABIT_NAME = "habit_name"
         const val HABIT_ID = "habit_id"
         const val IS_FIRST = "isFirst"

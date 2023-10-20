@@ -43,7 +43,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
 import com.fesvieira.habitsgoals.R
@@ -51,7 +50,7 @@ import com.fesvieira.habitsgoals.helpers.NotificationsService
 import com.fesvieira.habitsgoals.helpers.toStamp
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
-import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
+import com.fesvieira.habitsgoals.navigation.Routes.HabitDetails
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.DeleteHabitSnackbar
 import com.fesvieira.habitsgoals.ui.components.HabitCard
@@ -104,7 +103,7 @@ fun HabitListScreen(
         floatingActionButton = {
             AppFloatActionButton(icon = painterResource(R.drawable.ic_add)) {
                 habitsViewModel.selectedHabit.value = emptyHabit
-                navController.navigate(EditHabit)
+                navController.navigate(HabitDetails)
             }
         },
         snackbarHost = {
@@ -159,7 +158,7 @@ fun HabitListScreen(
                                 days = days,
                                 onClickListener = {
                                     habitsViewModel.selectedHabit.value = item
-                                    navController.navigate(EditHabit)
+                                    navController.navigate(HabitDetails)
                                 },
                                 onToggleDay = { day ->
                                     habitsViewModel.selectedHabit.value = item
@@ -186,6 +185,7 @@ private fun emptyHabitUI(lazyListScope: LazyListScope) {
             val composition by rememberLottieComposition(
                 spec = LottieCompositionSpec.RawRes(R.raw.rocket)
             )
+
             val logoAnimationState =
                 animateLottieCompositionAsState(
                     composition = composition,

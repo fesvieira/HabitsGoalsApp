@@ -8,7 +8,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.fesvieira.habitsgoals.navigation.Routes.EditHabit
+import com.fesvieira.habitsgoals.navigation.Routes.HabitDetails
 import com.fesvieira.habitsgoals.navigation.Routes.HabitList
 import com.fesvieira.habitsgoals.ui.screens.HabitDetailScreen
 import com.fesvieira.habitsgoals.ui.screens.HabitListScreen
@@ -32,17 +32,17 @@ fun MainNavHost() {
         }
 
         composable(
-            route = EditHabit,
+            route = HabitDetails,
             enterTransition = {
                 slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(300)
+                    animationSpec = tween(200)
                 )
             },
             exitTransition = {
                 slideOutOfContainer(
                     AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(300)
+                    animationSpec = tween(200)
                 )
             }) {
 
