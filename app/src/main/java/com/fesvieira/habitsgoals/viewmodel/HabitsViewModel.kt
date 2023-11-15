@@ -7,7 +7,8 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fesvieira.habitsgoals.R
-import com.fesvieira.habitsgoals.helpers.NotificationsService
+import com.fesvieira.habitsgoals.alarmmanager.AlarmItem
+import com.fesvieira.habitsgoals.alarmmanager.AndroidAlarmScheduler
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
 import com.fesvieira.habitsgoals.repository.HabitRepository
@@ -16,11 +17,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
 class HabitsViewModel @Inject constructor(
-    private val habitRepository: HabitRepository
+    private val habitRepository: HabitRepository,
+    private val alarmScheduler: AndroidAlarmScheduler
 ) : ViewModel() {
     private var _habits = mutableStateListOf<Habit>()
     val habits: List<Habit> = _habits
@@ -60,9 +65,9 @@ class HabitsViewModel @Inject constructor(
         updateHabit()
     }
 
-    fun deleteHabit(habit: Habit, context: Context) {
+    fun deleteHabit(habit: Habit) {
         viewModelScope.launch(Dispatchers.IO) {
-            NotificationsService.cancelReminder(context, habit.id)
+            alarmScheduler.cancel(habit.id)
             habitRepository.deleteHabit(habit)
         }
     }
@@ -101,10 +106,11 @@ class HabitsViewModel @Inject constructor(
                 delay(1000)
 
                 getHabitByName()?.let {
-                    if (it.reminder != null) {
-                        NotificationsService.scheduleNotification(context, it)
+                    val reminder = it.reminder
+                    if (reminder != null) {
+                        scheduleNotification(it.id, reminder)
                     } else {
-                        NotificationsService.cancelReminder(context, it.id)
+                        alarmScheduler.cancel(it.id)
                     }
                 }
             }
@@ -123,7 +129,7 @@ class HabitsViewModel @Inject constructor(
         _selectedHabit.value = selectedHabit.value.copy(goal = intGoal)
     }
 
-    fun updateSelectedHabit(reminder: Int?) {
+    fun updateSelectedHabit(reminder: Long?) {
         _selectedHabit.value = selectedHabit.value.copy(reminder = reminder)
     }
 
@@ -139,5 +145,15 @@ class HabitsViewModel @Inject constructor(
     fun refreshDoneDays() {
         _selectedHabitDaysDone.clear()
         _selectedHabitDaysDone.addAll(_selectedHabit.value.daysDone)
+    }
+
+    fun scheduleNotification(habitId: Int, reminder: Long) {
+        alarmScheduler.schedule(item = AlarmItem(
+            habitId,
+            time = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(reminder),
+                ZoneId.systemDefault()
+            )
+        ))
     }
 }

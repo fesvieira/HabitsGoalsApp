@@ -2,6 +2,7 @@ package com.fesvieira.habitsgoals.di
 
 import android.content.Context
 import androidx.room.Room
+import com.fesvieira.habitsgoals.alarmmanager.AndroidAlarmScheduler
 import com.fesvieira.habitsgoals.model.DateStampsConverter
 import com.fesvieira.habitsgoals.repository.HabitDao
 import com.fesvieira.habitsgoals.repository.HabitDatabase
@@ -37,4 +38,10 @@ object AppModule {
     fun provideHabitRepository(
         habitDao: HabitDao
     ): HabitRepository = HabitsRepositoryImpl(habitDao)
+
+    @Provides
+    fun provideAndroidAlarmScheduler(
+        @ApplicationContext
+        context: Context
+    ): AndroidAlarmScheduler = AndroidAlarmScheduler(context)
 }

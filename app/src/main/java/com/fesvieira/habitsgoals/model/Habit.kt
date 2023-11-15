@@ -16,7 +16,7 @@ data class Habit(
     @ColumnInfo(name = "goal")
     var goal: Int,
     @ColumnInfo(name = "reminder") // Reminder time of the day in minutes
-    var reminder: Int? = null,
+    var reminder: Long? = null,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 ) {

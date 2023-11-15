@@ -46,8 +46,8 @@ package com.fesvieira.habitsgoals.ui.screens
  import androidx.compose.ui.unit.sp
  import androidx.navigation.NavController
  import com.fesvieira.habitsgoals.R
+ import com.fesvieira.habitsgoals.helpers.habit.longToTime
  import com.fesvieira.habitsgoals.helpers.isAllowedTo
- import com.fesvieira.habitsgoals.helpers.minutesToHours
  import com.fesvieira.habitsgoals.helpers.noRippleClickable
  import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
  import com.fesvieira.habitsgoals.ui.components.TopBar
@@ -59,6 +59,9 @@ package com.fesvieira.habitsgoals.ui.screens
  import kotlinx.coroutines.delay
  import kotlinx.coroutines.launch
  import java.time.LocalDate
+ import java.time.LocalDateTime
+ import java.time.LocalTime
+ import java.time.OffsetDateTime
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -208,7 +211,7 @@ fun HabitDetailScreen(
 
                     AnimatedContent(
                         targetState = if (selectedHabit.reminder == null) stringResource(R.string.remind_me_about_this_habit)
-                        else "Reminder for: ${selectedHabit.reminder?.minutesToHours(context)}",
+                        else "Reminder for: ${selectedHabit.reminder?.longToTime}",
                         label = "",
                     ) {
                         Text(
@@ -238,8 +241,13 @@ fun HabitDetailScreen(
                 },
                 onOkayClick = {
                     showTimePicker = false
+                    val timeDate = LocalDateTime.now()
+                        .with(LocalTime.MIN)
+                        .plusHours(timePickerState.hour.toLong())
+                        .plusMinutes(timePickerState.minute.toLong())
+
                     habitsViewModel.updateSelectedHabit(
-                        reminder = timePickerState.hour * 60 + timePickerState.minute,
+                        reminder = timeDate.toEpochSecond(OffsetDateTime.now().offset) * 1000,
                     )
                 },
             )

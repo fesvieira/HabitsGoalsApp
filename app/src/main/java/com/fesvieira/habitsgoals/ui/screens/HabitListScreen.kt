@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
 import com.fesvieira.habitsgoals.R
-import com.fesvieira.habitsgoals.helpers.NotificationsService
 import com.fesvieira.habitsgoals.helpers.toStamp
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
@@ -88,7 +87,7 @@ fun HabitListScreen(
 
     LaunchedEffect(habitToDelete) {
         habitToDelete?.let { habit ->
-            habitsViewModel.deleteHabit(habit, context)
+            habitsViewModel.deleteHabit(habit)
             val job = launch {
                 snackBarHostState.showSnackbar("", duration = SnackbarDuration.Indefinite)
             }
@@ -112,10 +111,11 @@ fun HabitListScreen(
                 habitName = habitToDelete?.name ?: ""
             ) {
                 habitsViewModel.addHabit()
-                if (habitToDelete?.reminder != null) {
-                    NotificationsService.scheduleNotification(
-                        context,habitToDelete ?: return@DeleteHabitSnackbar
-                    )
+
+                habitToDelete?.let { habit ->
+                    habit.reminder?.let { reminder ->
+                        habitsViewModel.scheduleNotification(habit.id, reminder)
+                    }
                 }
                 habitToDelete = null
             }
