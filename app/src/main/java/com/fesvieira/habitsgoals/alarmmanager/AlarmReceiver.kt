@@ -21,20 +21,20 @@ class AlarmReceiver: BroadcastReceiver(){
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        if (context == null) return
+        if (context == null || intent == null) return
 
-        val nextIntent = Intent(context, MainActivity::class.java)
-        nextIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        nextIntent.putExtra(NOTIFICATION_ID, "1")
-        val pendingIntent = PendingIntentCompat.getActivity(context, 0, nextIntent, 0, false)
+        val newIntent = Intent(context, MainActivity::class.java)
+        newIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        newIntent.putExtra(NOTIFICATION_ID, intent.getStringExtra("id"))
+        val pendingIntent = PendingIntentCompat.getActivity(context, 0, newIntent, 0, false)
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val notification = NotificationCompat
             .Builder(context, NOTIFICATION_CHANNEL)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Test")
-            .setContentText("Time is over!!!")
+            .setContentTitle("Habit & Goals Reminder!!")
+            .setContentText("Reminder for habit: ${intent.getStringExtra("habitName")}")
             .setDefaults(Notification.DEFAULT_ALL)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
@@ -57,6 +57,6 @@ class AlarmReceiver: BroadcastReceiver(){
 
         channel.setSound(ringtoneManager, audioAttributes)
         notificationManager.createNotificationChannel(channel)
-        notificationManager.notify(1, notification.build())
+        notificationManager.notify(intent.getStringExtra("id")?.toIntOrNull() ?: 0, notification.build())
     }
 }

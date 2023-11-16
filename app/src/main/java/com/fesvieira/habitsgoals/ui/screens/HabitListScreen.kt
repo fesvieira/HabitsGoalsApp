@@ -114,7 +114,7 @@ fun HabitListScreen(
 
                 habitToDelete?.let { habit ->
                     habit.reminder?.let { reminder ->
-                        habitsViewModel.scheduleNotification(habit.id, reminder)
+                        habitsViewModel.scheduleNotification(habit.id, habit.name, reminder)
                     }
                 }
                 habitToDelete = null

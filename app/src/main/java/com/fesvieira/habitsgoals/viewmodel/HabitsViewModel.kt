@@ -108,7 +108,7 @@ class HabitsViewModel @Inject constructor(
                 getHabitByName()?.let {
                     val reminder = it.reminder
                     if (reminder != null) {
-                        scheduleNotification(it.id, reminder)
+                        scheduleNotification(it.id, it.name, reminder)
                     } else {
                         alarmScheduler.cancel(it.id)
                     }
@@ -147,9 +147,10 @@ class HabitsViewModel @Inject constructor(
         _selectedHabitDaysDone.addAll(_selectedHabit.value.daysDone)
     }
 
-    fun scheduleNotification(habitId: Int, reminder: Long) {
+    fun scheduleNotification(habitId: Int, habitName: String, reminder: Long) {
         alarmScheduler.schedule(item = AlarmItem(
-            habitId,
+            habitId = habitId,
+            habitName = habitName,
             time = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(reminder),
                 ZoneId.systemDefault()

@@ -12,17 +12,23 @@ class AndroidAlarmScheduler(private val context: Context) {
 
     @SuppressLint("MissingPermission")
     fun schedule(item: AlarmItem) {
-        val intent = PendingIntent.getBroadcast(
+
+        val notificationIntent = Intent(context, AlarmReceiver::class.java)
+        notificationIntent.putExtra("id", item.habitId.toString())
+        notificationIntent.putExtra("habitName", item.habitName)
+
+        val pendingIntent = PendingIntent.getBroadcast(
             context,
             item.habitId,
-            Intent(context, AlarmReceiver::class.java),
+            notificationIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+
         val alarmDate = item.time.atZone(ZoneId.systemDefault())
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             alarmDate.toEpochSecond() * 1000,
-            intent
+            pendingIntent
         )
     }
 
