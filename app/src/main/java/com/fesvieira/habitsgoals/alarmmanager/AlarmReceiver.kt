@@ -12,29 +12,39 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.PendingIntentCompat
 import com.fesvieira.habitsgoals.MainActivity
 import com.fesvieira.habitsgoals.R
+import com.fesvieira.habitsgoals.alarmmanager.AlarmDetails.Companion.HABIT_ID
+import com.fesvieira.habitsgoals.alarmmanager.AlarmDetails.Companion.HABIT_NAME
+import com.fesvieira.habitsgoals.alarmmanager.AlarmDetails.Companion.NOTIFICATION_CHANNEL
+import com.fesvieira.habitsgoals.alarmmanager.AlarmDetails.Companion.NOTIFICATION_ID
 
 
 class AlarmReceiver: BroadcastReceiver(){
-    companion object{
-        const val NOTIFICATION_ID = "habit_reminder"
-        const val NOTIFICATION_CHANNEL = "Habit Reminder"
-    }
-
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
+        val habitName = intent.getStringExtra(HABIT_NAME)
+        val habitId = intent.getStringExtra(HABIT_ID) ?: "0"
 
-        val newIntent = Intent(context, MainActivity::class.java)
-        newIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        newIntent.putExtra(NOTIFICATION_ID, intent.getStringExtra("id"))
-        val pendingIntent = PendingIntentCompat.getActivity(context, 0, newIntent, 0, false)
+        val mainActivityIntent = Intent(context, MainActivity::class.java)
+        mainActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        mainActivityIntent.putExtra(NOTIFICATION_ID, habitName)
 
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val pendingIntent = PendingIntentCompat
+            .getActivity(
+                context,
+                habitId.toInt(),
+                mainActivityIntent,
+                0,
+                false
+            )
+
+        val notificationManager = context
+            .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val notification = NotificationCompat
             .Builder(context, NOTIFICATION_CHANNEL)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("Habit & Goals Reminder!!")
-            .setContentText("Reminder for habit: ${intent.getStringExtra("habitName")}")
+            .setContentText("Reminder for habit: $habitName")
             .setDefaults(Notification.DEFAULT_ALL)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
@@ -57,6 +67,6 @@ class AlarmReceiver: BroadcastReceiver(){
 
         channel.setSound(ringtoneManager, audioAttributes)
         notificationManager.createNotificationChannel(channel)
-        notificationManager.notify(intent.getStringExtra("id")?.toIntOrNull() ?: 0, notification.build())
+        notificationManager.notify(habitId.toInt(), notification.build())
     }
 }
