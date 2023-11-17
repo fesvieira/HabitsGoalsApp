@@ -128,7 +128,10 @@ fun HabitDetailScreen(
     Scaffold(
         topBar = { TopBar(title = stringResource(R.string.habit_factory)) },
         floatingActionButton = {
-            AppFloatActionButton(icon = painterResource(R.drawable.ic_save)) {
+            AppFloatActionButton(
+                icon = painterResource(R.drawable.ic_save),
+                isLoading = shouldSaveHabit
+            ) {
                 if (selectedHabit.reminder != null) {
                     if (context.isAllowedTo(POST_NOTIFICATIONS) || Build.VERSION.SDK_INT < 33) {
                         shouldSaveHabit = true
