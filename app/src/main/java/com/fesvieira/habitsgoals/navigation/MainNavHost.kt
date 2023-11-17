@@ -2,7 +2,6 @@ package com.fesvieira.habitsgoals.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -13,18 +12,15 @@ import com.fesvieira.habitsgoals.navigation.Routes.HabitList
 import com.fesvieira.habitsgoals.ui.screens.HabitDetailScreen
 import com.fesvieira.habitsgoals.ui.screens.HabitListScreen
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
-fun MainNavHost() {
+fun MainNavHost(
+    habitsViewModel: HabitsViewModel
+) {
     val navController = rememberNavController()
-    val habitsViewModel = hiltViewModel<HabitsViewModel>()
-
-    val systemUiController = rememberSystemUiController()
 
     NavHost(navController = navController, startDestination = HabitList) {
         composable(HabitList) {
-            systemUiController.setSystemBarsColor(MaterialTheme.colorScheme.primary)
             HabitListScreen(
                 navController = navController,
                 habitsViewModel = habitsViewModel

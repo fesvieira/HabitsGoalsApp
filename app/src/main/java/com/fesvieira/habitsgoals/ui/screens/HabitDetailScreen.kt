@@ -7,6 +7,11 @@ package com.fesvieira.habitsgoals.ui.screens
  import androidx.activity.result.contract.ActivityResultContracts
  import androidx.compose.animation.AnimatedContent
  import androidx.compose.animation.AnimatedVisibility
+ import androidx.compose.animation.fadeIn
+ import androidx.compose.animation.fadeOut
+ import androidx.compose.animation.slideInVertically
+ import androidx.compose.animation.slideOutVertically
+ import androidx.compose.foundation.clickable
  import androidx.compose.foundation.layout.Arrangement
  import androidx.compose.foundation.layout.Row
  import androidx.compose.foundation.layout.fillMaxSize
@@ -52,6 +57,7 @@ package com.fesvieira.habitsgoals.ui.screens
  import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
  import com.fesvieira.habitsgoals.ui.components.TopBar
  import com.fesvieira.habitsgoals.ui.components.calendar.CalendarComponent
+ import com.fesvieira.habitsgoals.ui.components.dialogs.CalendarDialog
  import com.fesvieira.habitsgoals.ui.components.dialogs.TimerPickerDialog
  import com.fesvieira.habitsgoals.ui.theme.Typography
  import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
@@ -78,6 +84,7 @@ fun HabitDetailScreen(
     var showTimePicker by remember { mutableStateOf(false) }
     val date by remember { mutableStateOf(LocalDate.now()) }
     val selectedHabitDaysDone = habitsViewModel.selectedHabitDaysDone
+    var showCalendar by remember { mutableStateOf(false) }
 
     LaunchedEffect(shouldSaveHabit) {
         if (!shouldSaveHabit) return@LaunchedEffect
@@ -221,16 +228,24 @@ fun HabitDetailScreen(
                     }
                 }
             }
-
             item {
-                CalendarComponent(
-                    baseDate = date,
-                    daysDone = selectedHabitDaysDone,
-                    onToggleDay = { habitsViewModel.toggleDayDone(it) },
-                    modifier = Modifier
-                        .padding(16.dp)
-                )
+                Text(text = "Show Calendar", style = Typography.bodyMedium, modifier = Modifier.clickable { showCalendar = true })
             }
+        }
+
+        AnimatedVisibility(
+            visible = showCalendar,
+            enter = slideInVertically() + fadeIn(),
+            exit = slideOutVertically() + fadeOut()
+        ) {
+            CalendarDialog(
+                baseDate = date,
+                daysDone = selectedHabitDaysDone,
+                onToggleDay = { habitsViewModel.toggleDayDone(it) },
+                onDismiss = { showCalendar = false },
+                modifier = Modifier
+                    .padding(16.dp)
+            )
         }
 
         AnimatedVisibility(showTimePicker) {
