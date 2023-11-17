@@ -16,9 +16,10 @@ import com.fesvieira.habitsgoals.alarmmanager.AlarmDetails.Companion.HABIT_ID
 import com.fesvieira.habitsgoals.alarmmanager.AlarmDetails.Companion.HABIT_NAME
 import com.fesvieira.habitsgoals.alarmmanager.AlarmDetails.Companion.NOTIFICATION_CHANNEL
 import com.fesvieira.habitsgoals.alarmmanager.AlarmDetails.Companion.NOTIFICATION_ID
+import java.time.LocalDateTime
 
 
-class AlarmReceiver: BroadcastReceiver(){
+class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
         val habitName = intent.getStringExtra(HABIT_NAME)
@@ -68,5 +69,16 @@ class AlarmReceiver: BroadcastReceiver(){
         channel.setSound(ringtoneManager, audioAttributes)
         notificationManager.createNotificationChannel(channel)
         notificationManager.notify(habitId.toInt(), notification.build())
+
+        val alarmScheduler = AndroidAlarmScheduler(context)
+        if (habitName != null) {
+            alarmScheduler.schedule(
+                item = AlarmItem(
+                    habitId.toInt(),
+                    habitName,
+                    time = LocalDateTime.now().plusHours(24)
+                )
+            )
+        }
     }
 }

@@ -5,6 +5,8 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import com.fesvieira.habitsgoals.alarmmanager.AlarmDetails.Companion.HABIT_ID
+import com.fesvieira.habitsgoals.alarmmanager.AlarmDetails.Companion.HABIT_NAME
 import java.time.ZoneId
 
 class AndroidAlarmScheduler(private val context: Context) {
@@ -14,8 +16,8 @@ class AndroidAlarmScheduler(private val context: Context) {
     fun schedule(item: AlarmItem) {
 
         val notificationIntent = Intent(context, AlarmReceiver::class.java)
-        notificationIntent.putExtra("id", item.habitId.toString())
-        notificationIntent.putExtra("habitName", item.habitName)
+        notificationIntent.putExtra(HABIT_ID, item.habitId.toString())
+        notificationIntent.putExtra(HABIT_NAME, item.habitName)
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
