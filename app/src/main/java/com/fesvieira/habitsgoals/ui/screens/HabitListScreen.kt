@@ -192,10 +192,29 @@ DeleteHabitSnackbar(
 private fun emptyHabitUI(lazyListScope: LazyListScope) {
     lazyListScope.item {
         Column {
+            val composition by rememberLottieComposition(
+                spec = LottieCompositionSpec.RawRes(R.raw.rocket)
+            )
+
+            val logoAnimationState =
+                animateLottieCompositionAsState(
+                    composition = composition,
+                    iterations = LottieConstants.IterateForever
+                )
+
             Text(
                 text = stringResource(R.string.add_your_habits_to_start),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 40.dp, start = 40.dp, end = 40.dp)
+            )
+
+            LottieAnimation(
+                composition = composition,
+                progress = { logoAnimationState.progress },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 16.dp, start = 32.dp, end = 32.dp)
+                    .size(250.dp)
             )
         }
     }

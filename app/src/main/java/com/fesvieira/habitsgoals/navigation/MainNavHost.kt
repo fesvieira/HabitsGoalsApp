@@ -51,7 +51,8 @@ fun MainNavHost(
                     animationSpec = tween(300, easing = EaseOut),
                     towards = AnimatedContentTransitionScope.SlideDirection.Start
                 )
-            }) {
+            }
+        ) {
             HabitListScreen(
                 navController = navController,
                 habitsViewModel = habitsViewModel
@@ -70,15 +71,12 @@ fun MainNavHost(
                 )
             },
             exitTransition = {
-                fadeOut(
-                    animationSpec = tween(
-                        300, easing = LinearEasing
-                    )
-                ) + slideOutOfContainer(
-                    animationSpec = tween(300, easing = EaseOut),
+                fadeOut(animationSpec = tween(300, easing = LinearEasing)) +
+                        slideOutOfContainer(animationSpec = tween(300, easing = EaseOut),
                     towards = AnimatedContentTransitionScope.SlideDirection.End
                 )
-            }) {
+            }
+        ) {
 
             HabitDetailScreen(
                 navController = navController,
