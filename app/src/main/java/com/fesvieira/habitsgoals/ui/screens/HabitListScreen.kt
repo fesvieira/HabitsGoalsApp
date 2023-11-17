@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,7 +50,6 @@ import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.helpers.toStamp
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
-import com.fesvieira.habitsgoals.navigation.Routes
 import com.fesvieira.habitsgoals.navigation.Routes.HabitDetails
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.DeleteHabitSnackbar
@@ -74,10 +72,7 @@ fun HabitListScreen(
     val coroutineScope = rememberCoroutineScope()
     var habitToDelete by remember { mutableStateOf<Habit?>(null) }
     val snackBarHostState = remember { SnackbarHostState() }
-    val days = remember {
-        (0..2).map { LocalDate.now().minusDays(it.toLong()) }
-    }
-    val isLoading by habitsViewModel.areHabitsLoading.collectAsState()
+    val days = remember { (0..2).map { LocalDate.now().minusDays(it.toLong()) } }
 
     BackHandler(!shouldLeaveOnBackPress) {
         coroutineScope.launch {
@@ -98,6 +93,7 @@ fun HabitListScreen(
     LaunchedEffect(habitToDelete) {
         habitToDelete?.let { habit ->
             habitsViewModel.deleteHabit(habit)
+            delay(500)
             val job = launch {
                 snackBarHostState.showSnackbar("", duration = SnackbarDuration.Indefinite)
             }
@@ -105,11 +101,6 @@ fun HabitListScreen(
             job.cancel()
             habitToDelete = null
         }
-    }
-
-    LaunchedEffect(isLoading) {
-        if (!isLoading) return@LaunchedEffect
-        navController.navigate(Routes.Splash)
     }
 
     Scaffold(
@@ -121,19 +112,18 @@ fun HabitListScreen(
             }
         },
         snackbarHost = {
-DeleteHabitSnackbar(
-    snackbarHostState = snackBarHostState,
-    habitName = habitToDelete?.name ?: ""
-) {
-    habitsViewModel.addHabit()
-
-    habitToDelete?.let { habit ->
-        habit.reminder?.let { reminder ->
-            habitsViewModel.scheduleNotification(habit.id, habit.name, reminder)
-        }
-    }
-    habitToDelete = null
-}
+            DeleteHabitSnackbar(
+                snackbarHostState = snackBarHostState,
+                habitName = habitToDelete?.name ?: ""
+            ) {
+                habitToDelete?.let { habit ->
+                    habitsViewModel.addHabit(habit)
+                    habit.reminder?.let { reminder ->
+                        habitsViewModel.scheduleNotification(habit.id, habit.name, reminder)
+                    }
+                }
+                habitToDelete = null
+            }
         },
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->

@@ -78,9 +78,9 @@ class HabitsViewModel @Inject constructor(
         }
     }
 
-    fun addHabit() {
+    fun addHabit(habit: Habit? = null) {
         viewModelScope.launch(Dispatchers.IO) {
-            habitRepository.addHabit(selectedHabit.value)
+            habitRepository.addHabit(habit ?: selectedHabit.value)
         }
     }
 
