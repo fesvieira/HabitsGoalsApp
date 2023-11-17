@@ -140,7 +140,8 @@ fun HabitDetailScreen(
                     shouldSaveHabit = true
                 }
             }
-        }
+        },
+        modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         LazyColumn(
             verticalArrangement = Arrangement.Top,

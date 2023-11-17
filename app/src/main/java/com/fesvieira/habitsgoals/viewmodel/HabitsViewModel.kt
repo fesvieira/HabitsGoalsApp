@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime
@@ -36,11 +37,16 @@ class HabitsViewModel @Inject constructor(
     private val _selectedHabitDaysDone = SnapshotStateList<Long>()
     var selectedHabitDaysDone: List<Long> = _selectedHabitDaysDone
 
+    private val _areHabitsLoading = MutableStateFlow<Boolean>(false)
+    val areHabitsLoading get() = _areHabitsLoading.asStateFlow()
+
     init {
+        _areHabitsLoading.value = true
         viewModelScope.launch(Dispatchers.Main) {
             habitRepository.getHabits().collect { habitList ->
                 _habits.clear()
                 _habits.addAll(habitList)
+                _areHabitsLoading.value = false
             }
         }
     }

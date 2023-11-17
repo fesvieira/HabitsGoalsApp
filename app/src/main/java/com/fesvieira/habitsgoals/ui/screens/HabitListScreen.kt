@@ -1,5 +1,6 @@
 package com.fesvieira.habitsgoals.ui.screens
 
+import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
@@ -28,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +51,7 @@ import com.fesvieira.habitsgoals.R
 import com.fesvieira.habitsgoals.helpers.toStamp
 import com.fesvieira.habitsgoals.model.Habit
 import com.fesvieira.habitsgoals.model.Habit.Companion.emptyHabit
+import com.fesvieira.habitsgoals.navigation.Routes
 import com.fesvieira.habitsgoals.navigation.Routes.HabitDetails
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.DeleteHabitSnackbar
@@ -74,6 +77,7 @@ fun HabitListScreen(
     val days = remember {
         (0..2).map { LocalDate.now().minusDays(it.toLong()) }
     }
+    val isLoading by habitsViewModel.areHabitsLoading.collectAsState()
 
     BackHandler(!shouldLeaveOnBackPress) {
         coroutineScope.launch {
@@ -83,6 +87,12 @@ fun HabitListScreen(
         }
 
         Toast.makeText(context, context.getString(R.string.press_back), Toast.LENGTH_LONG).show()
+    }
+
+    BackHandler(shouldLeaveOnBackPress) {
+        coroutineScope.launch {
+            (context as? Activity)?.finish()
+        }
     }
 
     LaunchedEffect(habitToDelete) {
@@ -97,6 +107,11 @@ fun HabitListScreen(
         }
     }
 
+    LaunchedEffect(isLoading) {
+        if (!isLoading) return@LaunchedEffect
+        navController.navigate(Routes.Splash)
+    }
+
     Scaffold(
         topBar = { TopBar(title = stringResource(R.string.habits_list)) },
         floatingActionButton = {
@@ -106,20 +121,21 @@ fun HabitListScreen(
             }
         },
         snackbarHost = {
-            DeleteHabitSnackbar(
-                snackbarHostState = snackBarHostState,
-                habitName = habitToDelete?.name ?: ""
-            ) {
-                habitsViewModel.addHabit()
+DeleteHabitSnackbar(
+    snackbarHostState = snackBarHostState,
+    habitName = habitToDelete?.name ?: ""
+) {
+    habitsViewModel.addHabit()
 
-                habitToDelete?.let { habit ->
-                    habit.reminder?.let { reminder ->
-                        habitsViewModel.scheduleNotification(habit.id, habit.name, reminder)
-                    }
-                }
-                habitToDelete = null
-            }
+    habitToDelete?.let { habit ->
+        habit.reminder?.let { reminder ->
+            habitsViewModel.scheduleNotification(habit.id, habit.name, reminder)
         }
+    }
+    habitToDelete = null
+}
+        },
+        modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -180,25 +196,6 @@ private fun emptyHabitUI(lazyListScope: LazyListScope) {
                 text = stringResource(R.string.add_your_habits_to_start),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 40.dp, start = 40.dp, end = 40.dp)
-            )
-
-            val composition by rememberLottieComposition(
-                spec = LottieCompositionSpec.RawRes(R.raw.rocket)
-            )
-
-            val logoAnimationState =
-                animateLottieCompositionAsState(
-                    composition = composition,
-                    iterations = LottieConstants.IterateForever
-                )
-
-            LottieAnimation(
-                composition = composition,
-                progress = { logoAnimationState.progress },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 16.dp, start = 32.dp, end = 32.dp)
-                    .size(250.dp)
             )
         }
     }
