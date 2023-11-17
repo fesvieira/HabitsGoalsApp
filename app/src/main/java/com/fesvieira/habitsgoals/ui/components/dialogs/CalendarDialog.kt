@@ -1,5 +1,6 @@
 package com.fesvieira.habitsgoals.ui.components.dialogs
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,7 +23,7 @@ fun CalendarDialog(
             daysDone = daysDone,
             onToggleDay = onToggleDay,
             modifier = modifier
-                .padding(16.dp)
+                .fillMaxWidth()
         )
     }
 }

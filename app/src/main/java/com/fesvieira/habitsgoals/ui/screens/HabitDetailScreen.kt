@@ -242,9 +242,7 @@ fun HabitDetailScreen(
                 baseDate = date,
                 daysDone = selectedHabitDaysDone,
                 onToggleDay = { habitsViewModel.toggleDayDone(it) },
-                onDismiss = { showCalendar = false },
-                modifier = Modifier
-                    .padding(16.dp)
+                onDismiss = { showCalendar = false }
             )
         }
 
