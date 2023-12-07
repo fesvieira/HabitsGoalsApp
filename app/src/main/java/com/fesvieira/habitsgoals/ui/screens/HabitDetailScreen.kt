@@ -40,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -59,7 +58,6 @@ import com.fesvieira.habitsgoals.helpers.noRippleClickable
 import com.fesvieira.habitsgoals.ui.components.AppFloatActionButton
 import com.fesvieira.habitsgoals.ui.components.TopBar
 import com.fesvieira.habitsgoals.ui.components.calendar.CalendarComponent
-import com.fesvieira.habitsgoals.ui.components.dialogs.CalendarDialog
 import com.fesvieira.habitsgoals.ui.components.dialogs.TimerPickerDialog
 import com.fesvieira.habitsgoals.ui.theme.Typography
 import com.fesvieira.habitsgoals.viewmodel.HabitsViewModel
